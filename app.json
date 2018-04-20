@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "sdkVersion": "26.0.0",
+    "name": "Rec'd",
+    "icon": "./src/assets/app_icon.png",
+    "version": "0.0.1",
+    "slug": "recd",
+    "ios": {
+      "bundleIdentifier": "com.recdco.recd"
+    },
+    "android": {
+      "package": "com.recdco.recd"
+    }
+  },
+  "facebookScheme": "fb1806188016109251",
+  "facebookAppId": "recd",
+  "facebookDisplayName": "1806188016109251"
+}
