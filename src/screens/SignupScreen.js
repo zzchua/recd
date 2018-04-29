@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Button, Text } from 'react-native';
+import { View, StyleSheet, Button, Text, TextInput } from 'react-native';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { loginUserWithFacebook } from '../actions/AuthActions';
@@ -25,7 +25,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   signupContainer: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -36,10 +35,21 @@ class SignupScreen extends Component {
     title: 'Sign up',
   };
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      userEmail: "Email",
+    };
+  }
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.isLoggedIn) {
       this.props.navigation.navigate('App');
     }
+  }
+
+  moveToNameScreen() {
+    console.log(this.state.userEmail);
   }
 
   renderFacebookLoginButton() {
@@ -60,12 +70,21 @@ class SignupScreen extends Component {
         <View style={styles.logoContainer}>
           <Text>Rec&#39;d{/* &39; is HTML entity for single quote */} </Text>
         </View>
+
         <View style={styles.signupContainer}>
-          <Text style={{ color: 'blue' }}>Sign Up with Email Address or Phone Number</Text>
+          <TextInput
+            onChangeText={userEmail => this.setState({ userEmail })}
+            value={this.state.userEmail}
+          />
+          <Button
+            title="Sign Up"
+            onPress={this.moveToNameScreen}
+          />
         </View>
         <View style={styles.loginContainer}>
           <Text>Or</Text>
         </View>
+
         <View style={styles.loginContainer}>
           {this.renderFacebookLoginButton()}
         </View>

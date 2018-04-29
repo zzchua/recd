@@ -58,6 +58,12 @@ class LoginScreen extends Component {
         <View style={styles.loginContainer}>
           {this.renderFacebookLoginButton()}
         </View>
+        <View style={styles.logoContainer}>
+          <Button
+            title="Sign up"
+            onPress={() => this.props.navigation.navigate("SignUp")}
+          />
+        </View>
       </View>
     );
   }
