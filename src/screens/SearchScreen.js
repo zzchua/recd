@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 
-class FeedScreen extends Component {
+export default class SearchScreen extends Component {
   static navigationOptions = {
-    tabBarLabel: 'Feed',
+    tabBarLabel: 'Search',
   };
 
   render() {
     return (
       <View style={styles.container}>
-        <Text>This is the feed</Text>
+        <Text>Search for friends here</Text>
       </View>
     );
   }
@@ -23,5 +23,3 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
-
-export default FeedScreen;

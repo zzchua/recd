@@ -1,5 +1,4 @@
 import { StackNavigator } from 'react-navigation';
-import { Platform, StatusBar } from 'react-native';
 import LoginScreen from '../screens/LoginScreen';
 import SignupScreen from '../screens/SignupScreen';
 
@@ -13,10 +12,11 @@ export default StackNavigator(
     },
   },
   {
-    navigationOptions: {
-      headerStyle: {
-        paddingTop: Platform.OS === 'ios' ? 0 : StatusBar.currentHeight,
-      },
-    },
+    headerMode: 'none',
   },
 );
+
+// Note:
+// Use this to move the header down below the status bar,
+// this is not done out of the box for android
+// headerStyle: {paddingTop: Platform.OS === 'ios' ? 0 : StatusBar.currentHeight}
