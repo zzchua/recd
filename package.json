@@ -25,15 +25,17 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@expo/vector-icons": "^6.3.1",
     "expo": "^26.0.0",
     "firebase": "^4.13.1",
     "prop-types": "^15.6.1",
     "react": "16.3.0",
     "react-native": "~0.54.1",
+    "react-native-elements": "^0.19.1",
     "react-navigation": "^1.5.11",
     "react-redux": "^5.0.7",
     "redux": "^4.0.0",
-    "redux-thunk": "^2.2.0",
-    "redux-devtools-extension": "^2.13.2"
+    "redux-devtools-extension": "^2.13.2",
+    "redux-thunk": "^2.2.0"
   }
 }
