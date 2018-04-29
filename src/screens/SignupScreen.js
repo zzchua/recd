@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Button, Text, TextInput } from 'react-native';
+import { View, StyleSheet, Button, Text, KeyboardAvoidingView } from 'react-native';
+import { Input } from 'react-native-elements';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { loginUserWithFacebook } from '../actions/AuthActions';
@@ -13,18 +14,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logoContainer: {
-    flex: 2,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
   },
   loginContainer: {
-    flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  signupContainer: {
+  keyboardContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  formContainer: {
+    backgroundColor: 'gray',
+    width: 400,
+    borderRadius: 10,
+    paddingBottom: 32,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -38,8 +45,15 @@ class SignupScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userEmail: "Email",
+      userEmail: "",
+      userPassword: "",
+      passwordConfirmation: "",
+      isEmailValid: true,
+      isPasswordValid: true,
+      isConfirmationValid: true,
     };
+
+    this.moveToNameScreen = this.moveToNameScreen.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -49,7 +63,31 @@ class SignupScreen extends Component {
   }
 
   moveToNameScreen() {
-    console.log(this.state.userEmail);
+    console.log(this.state);
+
+    const {
+      userEmail,
+      userPassword,
+      passwordConfirmation,
+      isEmailValid,
+      isPasswordValid,
+      isConfirmationValid,
+    } = this.state;
+
+    this.setState({
+      isEmailValid: this.validateEmail(userEmail) || this.emailInput.shake(),
+      isPasswordValid: userPassword.length >= 8 || this.passwordInput.shake(),
+      isConfirmationValid: userPassword === passwordConfirmation || this.confirmationInput.shake(),
+    });
+
+    if (isEmailValid && isPasswordValid && isConfirmationValid) {
+      // TODO: Move to the next Screen
+    }
+  }
+
+  // TODO: Needs to have a way to validate email
+  validateEmail(email) {
+    return true;
   }
 
   renderFacebookLoginButton() {
@@ -67,21 +105,64 @@ class SignupScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <View style={styles.logoContainer}>
-          <Text>Rec&#39;d{/* &39; is HTML entity for single quote */} </Text>
-        </View>
+        <KeyboardAvoidingView contentContainerStyle={styles.keyboardContainer} behavior="position">
+          <View style={styles.logoContainer}>
+            <Text>Rec&#39;d{/* &39; is HTML entity for single quote */} </Text>
+          </View>
 
-        <View style={styles.signupContainer}>
-          <TextInput
-            onChangeText={userEmail => this.setState({ userEmail })}
-            value={this.state.userEmail}
-          />
+          <View style={styles.formContainer}>
+            <Input
+              value={this.state.userEmail}
+              keyboardAppearance="light"
+              autoFocus={false}
+              autoCapitalize="none"
+              autoCorrect={false}
+              keyboardType="email-address"
+              returnKeyType="next"
+              ref={(input) => { this.emailInput = input; }}
+              inputStyle={{ marginLeft: 10 }}
+              placeholder="Email"
+              containerStyle={{ borderBottomColor: 'rgba(0, 0, 0, 0.38)' }}
+              onChangeText={userEmail => this.setState({ userEmail })}
+              errorMessage={this.state.isEmailValid ? null : 'Please enter a valid email address'}
+            />
+            <Input
+              value={this.state.userPassword}
+              keyboardAppearance="light"
+              autoCapitalize="none"
+              autoCorrect={false}
+              returnKeyType="next"
+              blurOnSubmit = {true}
+              secureTextEntry = {true}
+              inputStyle={{ marginLeft: 10 }}
+              ref={(input) => { this.passwordInput = input; }}
+              placeholder="Password"
+              containerStyle={{ marginTop: 16, borderBottomColor: 'rgba(0, 0, 0, 0.38)' }}
+              onChangeText={userPassword => this.setState({ userPassword })}
+              errorMessage={this.state.isPasswordValid ? null : 'Please enter at least 8 characters'}
+            />
+            <Input
+              value={this.state.passwordConfirmation}
+              keyboardAppearance="light"
+              autoCapitalize="none"
+              autoCorrect={false}
+              returnKeyType="done"
+              blurOnSubmit = {true}
+              secureTextEntry = {true}
+              inputStyle={{ marginLeft: 10 }}
+              ref={(input) => { this.confirmationInput = input; }}
+              placeholder="Confirm password"
+              containerStyle={{ marginTop: 16, borderBottomColor: 'rgba(0, 0, 0, 0.38)' }}
+              onChangeText={passwordConfirmation => this.setState({ passwordConfirmation })}
+              errorMessage={this.state.isConfirmationValid ? null : 'Please enter the same password'}
+            />
+          </View>
           <Button
             title="Sign Up"
             onPress={this.moveToNameScreen}
           />
-        </View>
-        <View style={styles.loginContainer}>
+        </KeyboardAvoidingView>
+        <View>
           <Text>Or</Text>
         </View>
 
