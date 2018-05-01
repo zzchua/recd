@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Button, Text, KeyboardAvoidingView } from 'react-native';
-import { Input } from 'react-native-elements';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { loginUserWithFacebook } from '../actions/AuthActions';
-import { Spinner } from '../components/common';
+import { Spinner, SignupInput } from '../components/common';
 
 const styles = StyleSheet.create({
   container: {
@@ -45,9 +44,9 @@ class SignupScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userEmail: "",
-      userPassword: "",
-      passwordConfirmation: "",
+      userEmail: '',
+      userPassword: '',
+      passwordConfirmation: '',
       isEmailValid: true,
       isPasswordValid: true,
       isConfirmationValid: true,
@@ -63,7 +62,7 @@ class SignupScreen extends Component {
   }
 
   moveToNameScreen() {
-    console.log(this.state);
+    // console.log(this.state);
 
     const {
       userEmail,
@@ -96,7 +95,7 @@ class SignupScreen extends Component {
     }
     return (
       <Button
-        title="Sign Up with Facebook"
+        title='Sign Up with Facebook'
         onPress={this.props.loginUserWithFacebook}
       />
     );
@@ -105,60 +104,45 @@ class SignupScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <KeyboardAvoidingView contentContainerStyle={styles.keyboardContainer} behavior="position">
+        <KeyboardAvoidingView contentContainerStyle={styles.keyboardContainer} behavior='position'>
           <View style={styles.logoContainer}>
             <Text>Rec&#39;d{/* &39; is HTML entity for single quote */} </Text>
           </View>
 
           <View style={styles.formContainer}>
-            <Input
+            <SignupInput
               value={this.state.userEmail}
-              keyboardAppearance="light"
-              autoFocus={false}
-              autoCapitalize="none"
-              autoCorrect={false}
-              keyboardType="email-address"
-              returnKeyType="next"
-              ref={(input) => { this.emailInput = input; }}
-              inputStyle={{ marginLeft: 10 }}
-              placeholder="Email"
-              containerStyle={{ borderBottomColor: 'rgba(0, 0, 0, 0.38)' }}
+              reference={(input) => { this.emailInput = input; }}
+              isPassword={false}
+              placeholder='Email'
+              keyboardType='email-address'
               onChangeText={userEmail => this.setState({ userEmail })}
               errorMessage={this.state.isEmailValid ? null : 'Please enter a valid email address'}
+              returnKeyType='next'
             />
-            <Input
+            <SignupInput
+              reference={(input) => { this.passwordInput = input; }}
               value={this.state.userPassword}
-              keyboardAppearance="light"
-              autoCapitalize="none"
-              autoCorrect={false}
-              returnKeyType="next"
-              blurOnSubmit = {true}
-              secureTextEntry = {true}
-              inputStyle={{ marginLeft: 10 }}
-              ref={(input) => { this.passwordInput = input; }}
-              placeholder="Password"
-              containerStyle={{ marginTop: 16, borderBottomColor: 'rgba(0, 0, 0, 0.38)' }}
+              isPassword={true}
+              placeholder='Password'
+              keyboardType='default'
               onChangeText={userPassword => this.setState({ userPassword })}
               errorMessage={this.state.isPasswordValid ? null : 'Please enter at least 8 characters'}
+              returnKeyType='next'
             />
-            <Input
+            <SignupInput
+              reference={(input) => { this.confirmationInput = input; }}
               value={this.state.passwordConfirmation}
-              keyboardAppearance="light"
-              autoCapitalize="none"
-              autoCorrect={false}
-              returnKeyType="done"
-              blurOnSubmit = {true}
-              secureTextEntry = {true}
-              inputStyle={{ marginLeft: 10 }}
-              ref={(input) => { this.confirmationInput = input; }}
-              placeholder="Confirm password"
-              containerStyle={{ marginTop: 16, borderBottomColor: 'rgba(0, 0, 0, 0.38)' }}
+              isPassword={true}
+              placeholder='Confirm password'
+              keyboardType='default'
               onChangeText={passwordConfirmation => this.setState({ passwordConfirmation })}
               errorMessage={this.state.isConfirmationValid ? null : 'Please enter the same password'}
+              returnKeyType='done'
             />
           </View>
           <Button
-            title="Sign Up"
+            title='Sign Up'
             onPress={this.moveToNameScreen}
           />
         </KeyboardAvoidingView>
