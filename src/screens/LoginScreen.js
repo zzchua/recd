@@ -43,7 +43,7 @@ class LoginScreen extends Component {
     }
     return (
       <Button
-        title="Login with Facebook"
+        title='Login with Facebook'
         onPress={this.props.loginUserWithFacebook}
       />
     );
@@ -60,8 +60,8 @@ class LoginScreen extends Component {
         </View>
         <View style={styles.logoContainer}>
           <Button
-            title="Sign up"
-            onPress={() => this.props.navigation.navigate("SignUp")}
+            title='Sign up'
+            onPress={() => this.props.navigation.navigate('SignUp')}
           />
         </View>
       </View>

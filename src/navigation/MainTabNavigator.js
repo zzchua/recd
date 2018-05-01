@@ -30,16 +30,16 @@ export default TabNavigator(
         let icon;
         switch (routeName) {
           case 'Feed':
-            icon = <MaterialIcons name="home" size={iconSize} color={tintColor} />;
+            icon = <MaterialIcons name='home' size={iconSize} color={tintColor} />;
             break;
           case 'Search':
-            icon = <MaterialIcons name="search" size={iconSize} color={tintColor} />;
+            icon = <MaterialIcons name='search' size={iconSize} color={tintColor} />;
             break;
           case 'Notifications':
-            icon = <MaterialIcons name="notifications" size={iconSize} color={tintColor} />;
+            icon = <MaterialIcons name='notifications' size={iconSize} color={tintColor} />;
             break;
           case 'Profile':
-            icon = <MaterialIcons name="person" size={iconSize} color={tintColor} />;
+            icon = <MaterialIcons name='person' size={iconSize} color={tintColor} />;
             break;
           default:
             break;
@@ -57,6 +57,9 @@ export default TabNavigator(
       inactiveTintColor: 'gray',
       style: {
         backgroundColor: 'white',
+      },
+      indicatorStyle: {
+        backgroundColor: 'transparent',
       },
     },
   },

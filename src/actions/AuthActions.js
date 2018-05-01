@@ -48,7 +48,7 @@ export const logoutUser = () => {
     dispatch({
       type: LOGOUT_USER_SUCCESS,
     });
-    console.log("logged out");
+    console.log('logged out');
   };
 };
 

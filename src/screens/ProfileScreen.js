@@ -22,7 +22,7 @@ class ProfileScreen extends Component {
     }
     return (
       <Button
-        title="Log Out"
+        title='Log Out'
         onPress={this.props.logoutUser}
       />
     );
@@ -51,7 +51,9 @@ ProfileScreen.propTypes = {
   logoutUser: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
   isLoggedIn: PropTypes.bool.isRequired,
-  navigation: PropTypes.object.isRequired,
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
 };
 
 const mapStateToProps = (state) => {

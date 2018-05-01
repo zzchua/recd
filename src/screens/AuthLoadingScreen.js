@@ -7,10 +7,10 @@ import { userAlreadyLoggedIn } from '../actions/AuthActions';
 
 class AuthLoadingScreen extends Component {
   componentWillMount() {
-    console.log("auth screen mount");
+    console.log('auth screen mount');
     // Listen for authentication state to change.
     firebase.auth().onAuthStateChanged((user) => {
-      console.log("checking auth");
+      console.log('checking auth');
       if (user != null) {
         console.log(user);
         this.props.userAlreadyLoggedIn();
@@ -26,7 +26,7 @@ class AuthLoadingScreen extends Component {
     return (
       <View style={styles.container}>
         <ActivityIndicator />
-        <StatusBar barStyle="default" />
+        <StatusBar barStyle='default' />
       </View>
     );
   }
@@ -46,7 +46,9 @@ const mapDispatchToProps = {
 };
 
 AuthLoadingScreen.propTypes = {
-  navigation: PropTypes.object.isRequired,
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
   userAlreadyLoggedIn: PropTypes.func.isRequired,
 };
 

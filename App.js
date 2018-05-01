@@ -12,7 +12,7 @@ const store = createStore(reducers, {}, composeWithDevTools(applyMiddleware(Redu
 
 class App extends Component {
   componentWillMount() {
-    console.log("app mount");
+    console.log('app mount');
     // Initialize Firebase
     firebase.initializeApp({
       apiKey: FIREBASE.API_KEY,
