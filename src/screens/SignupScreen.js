@@ -62,8 +62,6 @@ class SignupScreen extends Component {
   }
 
   moveToNameScreen() {
-    // console.log(this.state);
-
     const {
       userEmail,
       userPassword,
@@ -79,14 +77,19 @@ class SignupScreen extends Component {
       isConfirmationValid: userPassword === passwordConfirmation || this.confirmationInput.shake(),
     });
 
-    if (isEmailValid && isPasswordValid && isConfirmationValid) {
-      // TODO: Move to the next Screen
+    if (isEmailValid && isPasswordValid && isConfirmationValid
+      && userEmail.length > 0 && userPassword.length > 0) {
+      this.props.navigation.navigate('Fullname', {
+        userEmail,
+        userPassword,
+      });
     }
   }
 
   // TODO: Needs to have a way to validate email
   validateEmail(email) {
-    return true;
+    const regex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+    return regex.test(String(email).toLowerCase());
   }
 
   renderFacebookLoginButton() {
