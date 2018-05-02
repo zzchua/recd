@@ -1,6 +1,7 @@
 import { StackNavigator } from 'react-navigation';
 import LoginScreen from '../screens/LoginScreen';
 import SignupScreen from '../screens/SignupScreen';
+import FullnameScreen from '../screens/FullnameScreen';
 
 export default StackNavigator(
   {
@@ -9,6 +10,9 @@ export default StackNavigator(
     },
     SignUp: {
       screen: SignupScreen,
+    },
+    Fullname: {
+      screen: FullnameScreen,
     },
   },
   {
