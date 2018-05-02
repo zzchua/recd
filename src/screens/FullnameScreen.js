@@ -45,8 +45,8 @@ class FullnameScreen extends Component {
       isFirstNameValid: userFirstName.length >= 1 || this.firstNameInput.shake(),
     });
 
-    if (isFirstNameValid) {
-      // TODO: Move to next screen
+    if (isFirstNameValid && userFirstName.length > 0) {
+      this.props.navigation.navigate('Username');
     }
   }
 
@@ -63,7 +63,7 @@ class FullnameScreen extends Component {
             placeholder='First Name'
             keyboardType='default'
             onChangeText={userFirstName => this.setState({ userFirstName })}
-            errorMessage={this.state.isFirstNameValid ? null : 'Please enter a valid first name'}
+            errorMessage={this.state.isFirstNameValid ? null : 'Please enter a valid username'}
             returnKeyType='next'
           />
           <SignupInput
@@ -86,6 +86,7 @@ class FullnameScreen extends Component {
 
 FullnameScreen.propTypes = {
   navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
     state: PropTypes.shape().isRequired,
   }).isRequired,
 };
