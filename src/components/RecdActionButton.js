@@ -6,6 +6,11 @@ import PropTypes from 'prop-types';
 import { FontAwesome, Entypo } from '@expo/vector-icons';
 import { showRecdModal } from '../actions/FeedActions';
 
+/**
+ * This component encapsulates the button from
+ * https://github.com/mastermoo/react-native-action-button
+ */
+
 const styles = StyleSheet.create({
   actionButtonIcon: {
     fontSize: 20,

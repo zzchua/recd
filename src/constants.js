@@ -18,3 +18,7 @@ export const FACEBOOK = {
   GRAPH_API_URL: 'https://graph.facebook.com/me',
   PERMISIONS: ['public_profile', 'email'],
 };
+
+export const FIREBASE_BACKEND_API = {
+  GET_SPOTIFY_ACCESS_TOKEN_URL: 'https://us-central1-recd-app.cloudfunctions.net/retrieveSpotifyAccessToken',
+};
