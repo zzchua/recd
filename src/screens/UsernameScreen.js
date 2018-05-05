@@ -24,15 +24,15 @@ class UsernameScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userInfo: this.props.navigation.state.params,
+      userInfo: this.props.navigation.state.params.userInfo,
       username: '',
       isUsernameValid: true,
     };
 
-    this.moveToProfilePicScreen = this.moveToProfilePicScreen.bind(this);
+    this.moveToMainScreen = this.moveToMainScreen.bind(this);
   }
 
-  moveToProfilePicScreen() {
+  moveToMainScreen() {
     const {
       userInfo,
       username,
@@ -43,8 +43,9 @@ class UsernameScreen extends Component {
       isUsernameValid: this.validateUsername(username) || this.usernameInput.shake(),
     });
 
-    if (isUsernameValid && username.length >= 5) {
+    if (isUsernameValid) {
       // TODO: Move to next screen
+      userInfo.username = username;
     }
   }
 
@@ -69,11 +70,11 @@ class UsernameScreen extends Component {
             errorMessage={this.state.isUsernameValid ? null : 'Please enter a valid first name'}
             returnKeyType='done'
           />
-          <Button
-            title='Next'
-            onPress={this.moveToProfilePicScreen}
-          />
         </View>
+        <Button
+          title='Finish'
+          onPress={this.moveToMainScreen}
+        />
       </View>
     );
   }

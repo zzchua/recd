@@ -79,9 +79,13 @@ class SignupScreen extends Component {
 
     if (isEmailValid && isPasswordValid && isConfirmationValid
       && userEmail.length > 0 && userPassword.length > 0) {
-      this.props.navigation.navigate('Fullname', {
+      const userInfo = {
         userEmail,
         userPassword,
+      };
+
+      this.props.navigation.navigate('Fullname', {
+        userInfo,
       });
     }
   }

@@ -3,6 +3,7 @@ import LoginScreen from '../screens/LoginScreen';
 import SignupScreen from '../screens/SignupScreen';
 import FullnameScreen from '../screens/FullnameScreen';
 import UsernameScreen from '../screens/UsernameScreen';
+import ProfilePicScreen from '../screens/ProfilePicScreen';
 
 export default StackNavigator(
   {
@@ -14,6 +15,9 @@ export default StackNavigator(
     },
     Fullname: {
       screen: FullnameScreen,
+    },
+    ProfilePic: {
+      screen: ProfilePicScreen,
     },
     Username: {
       screen: UsernameScreen,

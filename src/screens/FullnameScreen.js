@@ -24,7 +24,7 @@ class FullnameScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      userInfo: this.props.navigation.state.params,
+      userInfo: this.props.navigation.state.params.userInfo,
       userFirstName: '',
       userLastName: '',
       isFirstNameValid: true,
@@ -46,7 +46,11 @@ class FullnameScreen extends Component {
     });
 
     if (isFirstNameValid && userFirstName.length > 0) {
-      this.props.navigation.navigate('Username');
+      userInfo.userFirstName = userFirstName;
+      userInfo.userLastName = userLastName;
+      this.props.navigation.navigate('ProfilePic', {
+        userInfo,
+      });
     }
   }
 
@@ -63,7 +67,7 @@ class FullnameScreen extends Component {
             placeholder='First Name'
             keyboardType='default'
             onChangeText={userFirstName => this.setState({ userFirstName })}
-            errorMessage={this.state.isFirstNameValid ? null : 'Please enter a valid username'}
+            errorMessage={this.state.isFirstNameValid ? null : 'Please enter a valid first name'}
             returnKeyType='next'
           />
           <SignupInput
@@ -74,11 +78,11 @@ class FullnameScreen extends Component {
             onChangeText={userLastName => this.setState({ userLastName })}
             returnKeyType='done'
           />
-          <Button
-            title='Next'
-            onPress={this.moveToUsernameScreen}
-          />
         </View>
+        <Button
+          title='Next'
+          onPress={this.moveToUsernameScreen}
+        />
       </View>
     );
   }
