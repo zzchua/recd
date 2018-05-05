@@ -22,3 +22,8 @@ export const FACEBOOK = {
 export const FIREBASE_BACKEND_API = {
   GET_SPOTIFY_ACCESS_TOKEN_URL: 'https://us-central1-recd-app.cloudfunctions.net/retrieveSpotifyAccessToken',
 };
+
+export const SPOTIFY_API = {
+  GET_SEARCH_URL: 'https://api.spotify.com/v1/search',
+  TRACK_SEARCH_LIMIT: 5,
+};

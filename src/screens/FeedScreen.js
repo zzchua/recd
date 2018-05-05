@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, AsyncStorage } from 'react-native';
-import axios from 'axios';
+import { View, StyleSheet, Text } from 'react-native';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import RecdActionButton from '../components/RecdActionButton';
 import RecdModal from '../components/RecdModal';
-import { FIREBASE_BACKEND_API } from '../constants';
+import { getSpotifyAccessToken } from '../actions/FeedActions';
 
 const styles = StyleSheet.create({
   container: {
@@ -20,27 +21,8 @@ class FeedScreen extends Component {
     tabBarLabel: 'Feed',
   };
 
-  componentDidMount() {
-    console.log('Component Did Mount');
-    this.getSpotifyAccessToken();
-  }
-
-  async getSpotifyAccessToken() {
-    let response;
-    try {
-      response = await axios.get(FIREBASE_BACKEND_API.GET_SPOTIFY_ACCESS_TOKEN_URL);
-      console.log(response);
-    } catch (error) {
-      console.error('ERR: Error retrieving spotify token');
-      console.error(error);
-    }
-
-    try {
-      await AsyncStorage.setItem('spotifyAccessToken', response.data.access_token);
-    } catch (error) {
-      console.error('ERR: Error storing spotify token');
-      console.error(error);
-    }
+  componentWillMount() {
+    this.props.getSpotifyAccessToken();
   }
 
   render() {
@@ -54,4 +36,12 @@ class FeedScreen extends Component {
   }
 }
 
-export default FeedScreen;
+FeedScreen.propTypes = {
+  getSpotifyAccessToken: PropTypes.func.isRequired,
+};
+
+const mapDispatchToProps = {
+  getSpotifyAccessToken,
+};
+
+export default connect(null, mapDispatchToProps)(FeedScreen);
