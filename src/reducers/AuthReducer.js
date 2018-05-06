@@ -54,6 +54,7 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         isSignedUp: false,
+        error: true,
       };
     default:
       return state;
