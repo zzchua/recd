@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Button, Text } from 'react-native';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { signUpUserWithEmail } from '../actions/AuthActions';
 import { SignupInput } from '../components/common';
 
 const styles = StyleSheet.create({
@@ -29,10 +31,16 @@ class UsernameScreen extends Component {
       isUsernameValid: true,
     };
 
-    this.moveToMainScreen = this.moveToMainScreen.bind(this);
+    this.signUpWithFirebase = this.signUpWithFirebase.bind(this);
   }
 
-  moveToMainScreen() {
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.isSignedUp) {
+      this.props.navigation.navigate('App');
+    }
+  }
+
+  signUpWithFirebase() {
     const {
       userInfo,
       username,
@@ -46,6 +54,7 @@ class UsernameScreen extends Component {
     if (isUsernameValid) {
       // TODO: Move to next screen
       userInfo.username = username;
+      this.props.signUpUserWithEmail(userInfo);
     }
   }
 
@@ -73,17 +82,34 @@ class UsernameScreen extends Component {
         </View>
         <Button
           title='Finish'
-          onPress={this.moveToMainScreen}
+          onPress={this.signUpWithFirebase}
         />
       </View>
     );
   }
 }
 
+const mapStateToProps = (state) => {
+  return {
+    isSignedUp: state.auth.isSignedUp,
+  };
+};
+
+const mapDispatchToProps = {
+  signUpUserWithEmail,
+};
+
 UsernameScreen.propTypes = {
   navigation: PropTypes.shape({
     state: PropTypes.shape().isRequired,
+    navigate: PropTypes.func.isRequired,
   }).isRequired,
+  isSignedUp: PropTypes.bool,
+  signUpUserWithEmail: PropTypes.func.isRequired,
 };
 
-export default UsernameScreen;
+UsernameScreen.defaultProps = {
+  isSignedUp: false,
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(UsernameScreen);
