@@ -34,14 +34,19 @@ const SignupInput = ({
 };
 
 SignupInput.propTypes = {
-  value: PropTypes.bool.isRequired,
-  reference: PropTypes.func.isRequired,
+  value: PropTypes.string.isRequired,
+  reference: PropTypes.func,
   isPassword: PropTypes.bool.isRequired,
   placeholder: PropTypes.string.isRequired,
   keyboardType: PropTypes.string.isRequired,
   onChangeText: PropTypes.func.isRequired,
-  errorMessage: PropTypes.func.isRequired,
+  errorMessage: PropTypes.string,
   returnKeyType: PropTypes.string.isRequired,
+};
+
+SignupInput.defaultProps = {
+  errorMessage: null,
+  reference: null,
 };
 
 
