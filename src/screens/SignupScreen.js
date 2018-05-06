@@ -90,7 +90,7 @@ class SignupScreen extends Component {
     }
   }
 
-  // TODO: Needs to have a way to validate email
+  // TODO: May validate email using Firebase.
   validateEmail(email) {
     const regex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
     return regex.test(String(email).toLowerCase());
