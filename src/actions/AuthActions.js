@@ -1,7 +1,13 @@
 import Expo from 'expo';
 import firebase from 'firebase';
 import { FACEBOOK } from '../constants';
-import { LOADING_AUTH_USER, LOGIN_USER_SUCCESS, LOGOUT_USER_SUCCESS, USER_ALREADY_LOGGED_IN, LOGIN_USER_FAIL } from './types';
+import {
+  LOADING_AUTH_USER, LOGIN_USER_SUCCESS, LOGOUT_USER_SUCCESS,
+  USER_ALREADY_LOGGED_IN, LOGIN_USER_FAIL, SIGNUP_USER_FAIL,
+  SIGNUP_USER_SUCCESS,
+} from './types';
+
+require('firebase/firestore');
 
 export const loginUserWithFacebook = () => {
   return async (dispatch) => {
@@ -32,11 +38,95 @@ export const loginUserWithFacebook = () => {
         });
       }
     } catch (error) {
+      // TODO: Needs to figure out how to handle or log errors
       console.log(error);
       dispatch({
         type: LOGIN_USER_FAIL,
       });
     }
+  };
+};
+
+export const uploadProfilePicture = async (uri, storageLocation) => {
+  const response = await fetch(uri);
+  const blob = await response.blob();
+  const ref = firebase.storage().ref(storageLocation);
+  const snapshot = await ref.put(blob);
+
+  return snapshot.downloadURL;
+};
+
+export const addUserToDatabase = (email, username, photo, firstname, lastname, uid) => {
+  // TODO: We would want to separate this into database functions
+  const db = firebase.firestore();
+  db.collection('users').doc(username).set({
+    email,
+    photo,
+    firstname,
+    lastname,
+    uid,
+  })
+    .then((docRef) => {
+      console.log('Document written with ID: ', docRef.id);
+    })
+    .catch((error) => {
+      console.log('Error adding document: ', error);
+    });
+};
+
+export const signUpUserWithEmail = (userInfo) => {
+  const {
+    userEmail,
+    userPassword,
+    username,
+    userImage,
+    userFirstName,
+    userLastName,
+  } = userInfo;
+
+  const userFullName = userLastName.length > 0 ? `${userFirstName} ${userLastName}` : `${userFirstName}`;
+
+  return async (dispatch) => {
+    firebase.auth().createUserWithEmailAndPassword(userEmail, userPassword)
+      .then((user) => {
+        // Create user successfully
+        const storageLocation = `users/${user.uid}/photos/profile.jpg`;
+        uploadProfilePicture(userImage, storageLocation)
+          .then((photoURL) => {
+            user.updateProfile({
+              displayName: userFullName,
+              photoURL,
+              username,
+            }).then(() => {
+              dispatch({
+                // Add display name successfully
+                type: SIGNUP_USER_SUCCESS,
+              });
+              addUserToDatabase(
+                userEmail, username, photoURL,
+                userFirstName, userLastName, user.uid,
+              );
+            }).catch((error) => {
+              // Unable to add display name, may want to delete user
+              // TODO: Needs to figure out how to handle or log errors
+              console.log(error);
+              dispatch({
+                type: SIGNUP_USER_FAIL,
+              });
+            });
+          })
+          .catch((error) => {
+            // Unable to create user
+            // TODO: Needs to figure out how to handle or log errors
+            const { code, message } = error;
+            console.log(code);
+            console.log(message);
+
+            dispatch({
+              type: SIGNUP_USER_FAIL,
+            });
+          });
+      });
   };
 };
 

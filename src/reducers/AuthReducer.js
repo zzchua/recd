@@ -4,6 +4,8 @@ import {
   LOADING_AUTH_USER,
   USER_ALREADY_LOGGED_IN,
   LOGIN_USER_FAIL,
+  SIGNUP_USER_SUCCESS,
+  SIGNUP_USER_FAIL,
 } from '../actions/types';
 
 const INITIAL_STATE = {
@@ -42,6 +44,17 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         isLoggedIn: false,
         loading: false,
+      };
+    case SIGNUP_USER_SUCCESS:
+      return {
+        ...state,
+        isSignedUp: true,
+      };
+    case SIGNUP_USER_FAIL:
+      return {
+        ...state,
+        isSignedUp: false,
+        error: true,
       };
     default:
       return state;

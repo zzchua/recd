@@ -22,6 +22,15 @@ class App extends Component {
       storageBucket: FIREBASE.STORAGE_BUCKET,
       messagingSenderId: FIREBASE.MESSAGE_SENDER_ID,
     });
+
+    // This is needed so behavior for Date objects in Firestore cannot break the app
+    // This will create a warning related to timer being set for long period of time
+    // This can only be fix by react-native, which hasn't been done yet.
+    // To follow the issue, click here: https://github.com/facebook/react-native/issues/12981
+    const settings = {
+      timestampsInSnapshots: true,
+    };
+    firebase.firestore().settings(settings);
   }
 
   render() {
