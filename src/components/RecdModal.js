@@ -20,16 +20,12 @@ class RecdModal extends Component {
   }
 
   onSearchStringChange(text) {
-    this.setState(() => {
-      return { searchString: text };
-    });
+    this.setState({ searchString: text });
     this.props.getSpotifyTracks(this.props.spotifyAccessToken, text);
   }
 
   closeModalCleanup() {
-    this.setState(() => {
-      return { searchString: '' };
-    });
+    this.setState({ searchString: '' });
     this.props.hideRecdModal();
     this.props.clearSearchTrackItems();
   }
