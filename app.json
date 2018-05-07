@@ -2,7 +2,7 @@
   "expo": {
     "sdkVersion": "26.0.0",
     "name": "Rec'd",
-    "icon": "./src/assets/app_icon.png",
+    "icon": "./assets/app_icon.png",
     "version": "0.0.1",
     "slug": "recd",
     "ios": {

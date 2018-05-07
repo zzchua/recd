@@ -15,6 +15,7 @@
         "class-methods-use-this": 0,
         "import/prefer-default-export": 0,
         "jsx-quotes": ["error", "prefer-single"],
-        "linebreak-style": ["off", "windows"]
+        "linebreak-style": ["off", "windows"],
+        "global-require": 0
     }
 }

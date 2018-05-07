@@ -3,19 +3,21 @@ import MainTabNavigator from './MainTabNavigator';
 import AuthNavigator from './AuthNavigator';
 import AuthLoadingScreen from '../screens/AuthLoadingScreen';
 
-export default SwitchNavigator(
-  {
-    App: {
-      screen: MainTabNavigator,
+export default (isLoggedIn) => {
+  return SwitchNavigator(
+    {
+      App: {
+        screen: MainTabNavigator,
+      },
+      Auth: {
+        screen: AuthNavigator,
+      },
+      AuthLoading: {
+        screen: AuthLoadingScreen,
+      },
     },
-    Auth: {
-      screen: AuthNavigator,
+    {
+      initialRouteName: isLoggedIn ? 'App' : 'Auth',
     },
-    AuthLoading: {
-      screen: AuthLoadingScreen,
-    },
-  },
-  {
-    initialRouteName: 'AuthLoading',
-  },
-);
+  );
+};

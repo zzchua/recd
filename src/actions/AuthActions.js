@@ -142,12 +142,6 @@ export const logoutUser = () => {
   };
 };
 
-export const userAlreadyLoggedIn = () => {
-  return {
-    type: USER_ALREADY_LOGGED_IN,
-  };
-};
-
 // TODO: (STANDALONE)
 // Need to configure auth for building the app outside Expo
 // See https://docs.expo.io/versions/v27.0.0/sdk/facebook#ios-standalone-appadd-your-apps-bundle-id
