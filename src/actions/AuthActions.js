@@ -3,11 +3,17 @@ import firebase from 'firebase';
 import { FACEBOOK } from '../constants';
 import {
   LOADING_AUTH_USER, LOGIN_USER_SUCCESS, LOGOUT_USER_SUCCESS,
-  USER_ALREADY_LOGGED_IN, LOGIN_USER_FAIL, SIGNUP_USER_FAIL,
+  LOGIN_USER_FAIL, SIGNUP_USER_FAIL,
   SIGNUP_USER_SUCCESS,
 } from './types';
 
 require('firebase/firestore');
+
+export const userAlreadyLoggedIn = () => {
+  return {
+    type: LOGIN_USER_SUCCESS,
+  };
+};
 
 export const loginUserWithFacebook = () => {
   return async (dispatch) => {

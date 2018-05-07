@@ -10,6 +10,7 @@ import {
 const INITIAL_STATE = {
   loading: false,
   error: false,
+  isLoggedIn: false,
 };
 
 export default (state = INITIAL_STATE, action) => {
