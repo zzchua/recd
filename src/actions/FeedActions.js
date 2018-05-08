@@ -1,18 +1,6 @@
 import axios from 'axios';
 import { FIREBASE_BACKEND_API } from '../constants';
-import { SHOW_RECD_MODAL, HIDE_RECD_MODAL, GET_SPOTIFY_ACCESS_TOKEN_SUCCESS, GET_SPOTIFY_ACCESS_TOKEN_FAILURE } from './types';
-
-export const showRecdModal = () => {
-  return {
-    type: SHOW_RECD_MODAL,
-  };
-};
-
-export const hideRecdModal = () => {
-  return {
-    type: HIDE_RECD_MODAL,
-  };
-};
+import { GET_SPOTIFY_ACCESS_TOKEN_SUCCESS, GET_SPOTIFY_ACCESS_TOKEN_FAILURE } from './types';
 
 /**
  * This action retrieves a spotify access token

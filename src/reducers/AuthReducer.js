@@ -11,6 +11,7 @@ const INITIAL_STATE = {
   loading: false,
   error: false,
   isLoggedIn: false,
+  uid: '',
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -21,10 +22,12 @@ export default (state = INITIAL_STATE, action) => {
         loading: true,
       };
     case LOGIN_USER_SUCCESS:
+      console.log(action.payload);
       return {
         ...state,
         isLoggedIn: true,
         loading: false,
+        uid: action.payload.uid,
       };
     case LOGIN_USER_FAIL:
       return {
@@ -37,11 +40,13 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         isLoggedIn: false,
         loading: false,
+        uid: '',
       };
     case SIGNUP_USER_SUCCESS:
       return {
         ...state,
         isSignedUp: true,
+        uid: action.payload.uid,
       };
     case SIGNUP_USER_FAIL:
       return {

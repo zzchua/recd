@@ -40,9 +40,10 @@ class Root extends Component {
       console.log('checking auth');
       if (user != null) {
         console.log('User is logged in');
-        this.props.userAlreadyLoggedIn();
+        this.props.userAlreadyLoggedIn(user.uid);
+      } else {
+        console.log('User is logged out');
       }
-      console.log('User is logged out');
       // Only update this once
       if (!this.state.isAuthReady) {
         this.setState({ isAuthReady: true });

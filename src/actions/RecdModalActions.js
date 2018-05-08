@@ -6,7 +6,10 @@ import {
   GET_SPOTIFY_ACCESS_TOKEN_FAILURE,
   GET_SPOTIFY_ACCESS_TOKEN_SUCCESS,
   CLEAR_SEARCH_TRACK_ITEMS,
+  RECD_SENT_SUCCESS,
+  RECD_SENT_FAILURE,
 } from '../actions/types';
+import { putUserRecds } from '../database/DatabaseUtils';
 
 
 // Helper Methods
@@ -88,6 +91,23 @@ export const getSpotifyTracks = (token, searchString) => {
         }
       }
     }
+  };
+};
+
+// TODO: Do we need to dispatch actions?
+export const sendRecd = (currentUid, uids, recdItem) => {
+  return (dispatch) => {
+    putUserRecds(currentUid, uids, recdItem).then(() => {
+      console.log('successfully sent recommendations');
+      dispatch({
+        type: RECD_SENT_SUCCESS,
+      });
+    }).catch(() => {
+      console.log('something went wrong');
+      dispatch({
+        type: RECD_SENT_FAILURE,
+      });
+    });
   };
 };
 

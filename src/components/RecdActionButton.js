@@ -27,7 +27,7 @@ class RecdActionButton extends Component {
           size={50}
           buttonColor='#9b59b6'
           title="Send a Rec'd"
-          onPress={this.props.showRecdModal}
+          onPress={() => { this.props.navigation.navigate('RecdSearch'); }}
         >
           <FontAwesome name='send-o' style={styles.actionButtonIcon} />
         </ActionButton.Item>
@@ -49,7 +49,9 @@ const mapDispatchToProps = {
 };
 
 RecdActionButton.propTypes = {
-  showRecdModal: PropTypes.func.isRequired,
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
 };
 
 export default connect(null, mapDispatchToProps)(RecdActionButton);

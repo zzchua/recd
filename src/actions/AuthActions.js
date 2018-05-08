@@ -9,9 +9,12 @@ import {
 
 require('firebase/firestore');
 
-export const userAlreadyLoggedIn = () => {
+export const userAlreadyLoggedIn = (uid) => {
   return {
     type: LOGIN_USER_SUCCESS,
+    payload: {
+      uid,
+    },
   };
 };
 
@@ -31,9 +34,12 @@ export const loginUserWithFacebook = () => {
         const credential = firebase.auth.FacebookAuthProvider.credential(token);
         await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
         await firebase.auth().signInWithCredential(credential);
-        const { displayName } = firebase.auth().currentUser;
+        const { displayName, uid } = firebase.auth().currentUser;
         dispatch({
           type: LOGIN_USER_SUCCESS,
+          payload: {
+            uid,
+          },
         });
         console.log(`Logged in ${displayName}`);
       } else {
@@ -65,12 +71,12 @@ export const uploadProfilePicture = async (uri, storageLocation) => {
 export const addUserToDatabase = (email, username, photo, firstname, lastname, uid) => {
   // TODO: We would want to separate this into database functions
   const db = firebase.firestore();
-  db.collection('users').doc(username).set({
+  db.collection('users').doc(uid).set({
     email,
     photo,
     firstname,
     lastname,
-    uid,
+    username,
   })
     .then((docRef) => {
       console.log('Document written with ID: ', docRef.id);
@@ -107,6 +113,9 @@ export const signUpUserWithEmail = (userInfo) => {
               dispatch({
                 // Add display name successfully
                 type: SIGNUP_USER_SUCCESS,
+                payload: {
+                  uid: user.uid,
+                },
               });
               addUserToDatabase(
                 userEmail, username, photoURL,

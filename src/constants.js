@@ -25,5 +25,5 @@ export const FIREBASE_BACKEND_API = {
 
 export const SPOTIFY_API = {
   GET_SEARCH_URL: 'https://api.spotify.com/v1/search',
-  TRACK_SEARCH_LIMIT: 5,
+  TRACK_SEARCH_LIMIT: 10,
 };
