@@ -1,7 +1,7 @@
 import React from 'react';
 import { TabNavigator } from 'react-navigation';
 import { MaterialIcons } from '@expo/vector-icons';
-import FeedScreen from '../screens/FeedScreen';
+import FeedNavigator from './FeedNavigator';
 import ProfileScreen from '../screens/ProfileScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
 import SearchScreen from '../screens/SearchScreen';
@@ -11,7 +11,7 @@ const iconSize = 25;
 export default TabNavigator(
   {
     Feed: {
-      screen: FeedScreen,
+      screen: FeedNavigator,
     },
     Search: {
       screen: SearchScreen,

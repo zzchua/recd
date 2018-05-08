@@ -3,7 +3,6 @@ import { View, StyleSheet, Text } from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import RecdActionButton from '../components/RecdActionButton';
-import RecdModal from '../components/RecdModal';
 import { getSpotifyAccessToken } from '../actions/FeedActions';
 
 const styles = StyleSheet.create({
@@ -18,7 +17,7 @@ const styles = StyleSheet.create({
 
 class FeedScreen extends Component {
   static navigationOptions = {
-    tabBarLabel: 'Feed',
+    header: null,
   };
 
   componentWillMount() {
@@ -29,8 +28,7 @@ class FeedScreen extends Component {
     return (
       <View style={styles.container}>
         <Text>This is the feed</Text>
-        <RecdActionButton />
-        <RecdModal />
+        <RecdActionButton navigation={this.props.navigation} />
       </View>
     );
   }
@@ -38,6 +36,9 @@ class FeedScreen extends Component {
 
 FeedScreen.propTypes = {
   getSpotifyAccessToken: PropTypes.func.isRequired,
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
 };
 
 const mapDispatchToProps = {
