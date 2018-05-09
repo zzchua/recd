@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Alert, ActivityIndicator, View, StyleSheet, ScrollView } from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { ListItem, Button } from 'react-native-elements';
+import { Input, ListItem, Button } from 'react-native-elements';
 import { MaterialIcons, FontAwesome } from '@expo/vector-icons';
 import { getUserList } from '../database/DatabaseUtils';
 import { sendRecd, resetState } from '../actions/RecdModalActions';
@@ -19,6 +19,10 @@ const styles = StyleSheet.create({
   listContainer: {
     flex: 5,
   },
+  msgContainer: {
+    marginTop: 10,
+    alignItems: 'center',
+  },
   loading: {
     position: 'absolute',
     left: 0,
@@ -34,6 +38,7 @@ class SendRecdScreen extends Component {
   static navigationOptions = {
     title: 'Send',
     tabBarVisible: false,
+    swipeEnabled: false,
   };
 
   constructor(props) {
@@ -41,11 +46,13 @@ class SendRecdScreen extends Component {
     this.state = {
       userList: [],
       selectedUsers: new Set(),
+      message: '',
     };
     this.addRemoveUser = this.addRemoveUser.bind(this);
     this.sendRecdToUsers = this.sendRecdToUsers.bind(this);
     this.renderLoadingSuccessFailure = this.renderLoadingSuccessFailure.bind(this);
     this.quitAndCleanUpRecdModal = this.quitAndCleanUpRecdModal.bind(this);
+    this.onMessageChange = this.onMessageChange.bind(this);
   }
 
   componentDidMount() {
@@ -72,6 +79,10 @@ class SendRecdScreen extends Component {
     if (this.props.recdSent || this.props.recdSentFailure) {
       this.showConfirmationAlert();
     }
+  }
+
+  onMessageChange(message) {
+    this.setState({ message });
   }
 
   showConfirmationAlert() {
@@ -106,6 +117,7 @@ class SendRecdScreen extends Component {
     this.props.sendRecd(
       this.props.currentUid,
       this.state.selectedUsers,
+      this.state.message,
       this.props.navigation.state.params.selectedTrack,
     );
   }
@@ -145,6 +157,15 @@ class SendRecdScreen extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <View style={styles.msgContainer}>
+          <Input
+            placeholder='Enter a message'
+            label='Send a message along'
+            onChangeText={this.onMessageChange}
+            value={this.state.message}
+            containerStyle={{ width: '90%' }}
+          />
+        </View>
         <View style={styles.listContainer}>
           <ScrollView>
             {this.renderUserList()}

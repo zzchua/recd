@@ -14,7 +14,7 @@ export const getUserList = () => {
  * @param {*} uids list of uids to send recd to
  * @param {*} recdItem the spotify song item to send
  */
-export const putUserRecds = (currentUid, uids, recdItem) => {
+export const putUserRecds = (currentUid, uids, message, recdItem) => {
   const db = firebase.firestore();
   const batch = db.batch();
   uids.forEach((uid) => {
@@ -26,6 +26,7 @@ export const putUserRecds = (currentUid, uids, recdItem) => {
     const recdItemDocRef = db.collection('user_recds').doc(uid).collection('recd_items').doc(rid);
     batch.set(recdItemDocRef, {
       fromUser: currentUid,
+      message,
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       type: 'spotify',
       recdItem: {
