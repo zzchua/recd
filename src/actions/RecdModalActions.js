@@ -97,12 +97,12 @@ export const getSpotifyTracks = (token, searchString) => {
 };
 
 // TODO: Do we need to dispatch actions?
-export const sendRecd = (currentUid, uids, recdItem) => {
+export const sendRecd = (currentUid, uids, message, recdItem) => {
   return (dispatch) => {
     dispatch({
       type: RECD_SENT_LOADING,
     });
-    putUserRecds(currentUid, uids, recdItem).then(() => {
+    putUserRecds(currentUid, uids, message, recdItem).then(() => {
       dispatch({
         type: RECD_SENT_SUCCESS,
       });

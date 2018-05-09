@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { Input, ListItem } from 'react-native-elements';
+import { Input, ListItem, SearchBar } from 'react-native-elements';
 import { getSpotifyTracks, clearSearchTrackItems } from '../actions/RecdModalActions';
 
 
@@ -23,6 +23,7 @@ class SearchRecdScreen extends Component {
   static navigationOptions = {
     title: 'Search',
     tabBarVisible: false,
+    swipeEnabled: false,
   };
 
   constructor(props) {
@@ -90,8 +91,9 @@ class SearchRecdScreen extends Component {
     return (
       <View style={styles.container}>
         <View>
-          <Input
-            placeholder='Enter an artist, album or song'
+          <SearchBar
+            lightTheme
+            placeholder='Enter a song title'
             onChangeText={this.onSearchStringChange}
             value={this.state.searchString}
           />
