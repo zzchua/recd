@@ -8,6 +8,8 @@ import {
   CLEAR_SEARCH_TRACK_ITEMS,
   RECD_SENT_SUCCESS,
   RECD_SENT_FAILURE,
+  RECD_SENT_LOADING,
+  RESET_STATE,
 } from '../actions/types';
 import { putUserRecds } from '../database/DatabaseUtils';
 
@@ -97,17 +99,24 @@ export const getSpotifyTracks = (token, searchString) => {
 // TODO: Do we need to dispatch actions?
 export const sendRecd = (currentUid, uids, recdItem) => {
   return (dispatch) => {
+    dispatch({
+      type: RECD_SENT_LOADING,
+    });
     putUserRecds(currentUid, uids, recdItem).then(() => {
-      console.log('successfully sent recommendations');
       dispatch({
         type: RECD_SENT_SUCCESS,
       });
     }).catch(() => {
-      console.log('something went wrong');
       dispatch({
         type: RECD_SENT_FAILURE,
       });
     });
+  };
+};
+
+export const resetState = () => {
+  return {
+    type: RESET_STATE,
   };
 };
 

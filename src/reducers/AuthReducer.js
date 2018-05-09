@@ -22,7 +22,6 @@ export default (state = INITIAL_STATE, action) => {
         loading: true,
       };
     case LOGIN_USER_SUCCESS:
-      console.log(action.payload);
       return {
         ...state,
         isLoggedIn: true,

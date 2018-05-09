@@ -29,13 +29,6 @@ class SearchRecdScreen extends Component {
     super(props);
     this.state = {
       searchString: '',
-      // selectedTrack: {
-      //   uri: '',
-      //   title: '',
-      //   artists: [],
-      //   imageUrls: [],
-      //   playUrl: '',
-      // },
     };
     this.onSearchStringChange = this.onSearchStringChange.bind(this);
     this.onTrackSelected = this.onTrackSelected.bind(this);
@@ -43,7 +36,6 @@ class SearchRecdScreen extends Component {
 
   componentWillUnmount() {
     this.props.clearSearchTrackItems();
-    this.setState({ searchString: '' });
   }
 
   onSearchStringChange(text) {
@@ -61,12 +53,6 @@ class SearchRecdScreen extends Component {
     const artistNames = artists.map((artist) => {
       return artist.name;
     });
-    // this.setState({
-    //   ...this.state,
-    //   selectedTrack: {
-    //     uri, title, artists: artistNames, imageUrls, playUrl,
-    //   },
-    // });
     this.props.navigation.navigate(
       'RecdSend',
       {
@@ -75,7 +61,6 @@ class SearchRecdScreen extends Component {
         },
       },
     );
-    this.props.clearSearchTrackItems();
   }
 
   // TODO: Handle display of multiple artists

@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { Alert, ActivityIndicator, View, StyleSheet, ScrollView } from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { ListItem, Button } from 'react-native-elements';
 import { MaterialIcons, FontAwesome } from '@expo/vector-icons';
 import { getUserList } from '../database/DatabaseUtils';
-import { sendRecd } from '../actions/RecdModalActions';
+import { sendRecd, resetState } from '../actions/RecdModalActions';
 
 // TODO:
 // 1. Render friends faster
@@ -18,6 +18,15 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     flex: 5,
+  },
+  loading: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
@@ -35,9 +44,11 @@ class SendRecdScreen extends Component {
     };
     this.addRemoveUser = this.addRemoveUser.bind(this);
     this.sendRecdToUsers = this.sendRecdToUsers.bind(this);
+    this.renderLoadingSuccessFailure = this.renderLoadingSuccessFailure.bind(this);
+    this.quitAndCleanUpRecdModal = this.quitAndCleanUpRecdModal.bind(this);
   }
 
-  componentWillMount() {
+  componentDidMount() {
     getUserList().then((querySnapshot) => {
       const userList = [];
       querySnapshot.forEach((userDoc) => {
@@ -57,6 +68,29 @@ class SendRecdScreen extends Component {
     });
   }
 
+  componentDidUpdate() {
+    if (this.props.recdSent || this.props.recdSentFailure) {
+      this.showConfirmationAlert();
+    }
+  }
+
+  showConfirmationAlert() {
+    const confirm =
+      this.props.recdSentFailure ? 'Error sending rec\'d' : 'Rec\'d sent successfully!';
+    Alert.alert(
+      confirm,
+      '',
+      [{ text: 'Ok', onPress: this.quitAndCleanUpRecdModal }],
+      { cancelable: false },
+    );
+  }
+
+  quitAndCleanUpRecdModal() {
+    // This will cause the component to unmount
+    this.props.navigation.popToTop();
+    this.props.resetState();
+  }
+
   addRemoveUser(uid) {
     const updatedSet = new Set(this.state.selectedUsers);
     if (updatedSet.has(uid)) {
@@ -74,6 +108,17 @@ class SendRecdScreen extends Component {
       this.state.selectedUsers,
       this.props.navigation.state.params.selectedTrack,
     );
+  }
+
+  renderLoadingSuccessFailure() {
+    if (this.props.recdSentLoading) {
+      return (
+        <View style={styles.loading}>
+          <ActivityIndicator size='large' />
+        </View>
+      );
+    }
+    return null;
   }
 
   renderUserList() {
@@ -113,6 +158,7 @@ class SendRecdScreen extends Component {
             onPress={this.sendRecdToUsers}
           />
         </View>
+        {this.renderLoadingSuccessFailure()}
       </View>
     );
   }
@@ -122,18 +168,27 @@ SendRecdScreen.propTypes = {
   currentUid: PropTypes.string.isRequired,
   navigation: PropTypes.shape({
     state: PropTypes.shape().isRequired,
+    popToTop: PropTypes.func.isRequired,
   }).isRequired,
   sendRecd: PropTypes.func.isRequired,
+  resetState: PropTypes.func.isRequired,
+  recdSent: PropTypes.bool.isRequired,
+  recdSentFailure: PropTypes.bool.isRequired,
+  recdSentLoading: PropTypes.bool.isRequired,
 };
 
 const mapStateToProps = (state) => {
   return {
     currentUid: state.auth.uid,
+    recdSent: state.recdModal.recdSent,
+    recdSentFailure: state.recdModal.recdSentFailure,
+    recdSentLoading: state.recdModal.recdSentLoading,
   };
 };
 
 const mapDispatchToProps = {
   sendRecd,
+  resetState,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SendRecdScreen);
