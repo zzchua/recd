@@ -40,3 +40,12 @@ export const putUserRecds = (currentUid, uids, message, recdItem) => {
   });
   return batch.commit();
 };
+
+// TODO: Handle pagination for large collection
+export const getRecdItems = (uid) => {
+  const db = firebase.firestore();
+  return db.collection('user_recds')
+    .doc(uid).collection('recd_items')
+    .orderBy('timestamp', 'desc')
+    .get();
+};

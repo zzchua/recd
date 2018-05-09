@@ -1,6 +1,13 @@
 import axios from 'axios';
 import { FIREBASE_BACKEND_API } from '../constants';
-import { GET_SPOTIFY_ACCESS_TOKEN_SUCCESS, GET_SPOTIFY_ACCESS_TOKEN_FAILURE } from './types';
+import { getRecdItems } from '../database/DatabaseUtils';
+import {
+  GET_SPOTIFY_ACCESS_TOKEN_SUCCESS,
+  GET_SPOTIFY_ACCESS_TOKEN_FAILURE,
+  GET_RECD_ITEMS_SUCCESS,
+  GET_RECD_ITEMS_LOADING,
+  GET_RECD_ITEMS_FAILURE,
+} from './types';
 
 /**
  * This action retrieves a spotify access token
@@ -20,5 +27,28 @@ export const getSpotifyAccessToken = () => {
         type: GET_SPOTIFY_ACCESS_TOKEN_FAILURE,
       });
     }
+  };
+};
+
+// TODO: Handle Pagination
+export const retrieveRecdItems = (uid) => {
+  return (dispatch) => {
+    dispatch({
+      type: GET_RECD_ITEMS_LOADING,
+    });
+    getRecdItems(uid).then((querySnapshot) => {
+      const feedItems = [];
+      querySnapshot.forEach((item) => {
+        feedItems.push({ id: item.id, data: item.data() });
+      });
+      dispatch({
+        type: GET_RECD_ITEMS_SUCCESS,
+        payload: feedItems,
+      });
+    }).catch(() => {
+      dispatch({
+        type: GET_RECD_ITEMS_FAILURE,
+      });
+    });
   };
 };

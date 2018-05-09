@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { Input, ListItem, SearchBar } from 'react-native-elements';
+import { ListItem, SearchBar } from 'react-native-elements';
 import { getSpotifyTracks, clearSearchTrackItems } from '../actions/RecdModalActions';
 
 
