@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { loginUserWithFacebook } from '../actions/AuthActions';
 import { Spinner, SignupInput } from '../components/common';
+import { MINIMUM_PASSWORD_LENGTH } from '../constants';
+import { getEmailUnique } from '../database/DatabaseUtils';
 
 const styles = StyleSheet.create({
   container: {
@@ -48,11 +50,13 @@ class SignupScreen extends Component {
       userPassword: '',
       passwordConfirmation: '',
       isEmailValid: true,
+      isEmailUnique: true,
       isPasswordValid: true,
       isConfirmationValid: true,
     };
 
     this.moveToNameScreen = this.moveToNameScreen.bind(this);
+    this.renderErrorMessage = this.renderErrorMessage.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -61,39 +65,48 @@ class SignupScreen extends Component {
     }
   }
 
-  moveToNameScreen() {
-    const {
-      userEmail,
-      userPassword,
-      passwordConfirmation,
-      isEmailValid,
-      isPasswordValid,
-      isConfirmationValid,
-    } = this.state;
+  async moveToNameScreen() {
+    const isEmailValid = this.validateEmail(this.state.userEmail);
+    const isPasswordValid = this.state.userPassword.length >= MINIMUM_PASSWORD_LENGTH;
+    const isConfirmationValid = this.state.userPassword === this.state.passwordConfirmation;
 
-    this.setState({
-      isEmailValid: this.validateEmail(userEmail) || this.emailInput.shake(),
-      isPasswordValid: userPassword.length >= 8 || this.passwordInput.shake(),
-      isConfirmationValid: userPassword === passwordConfirmation || this.confirmationInput.shake(),
-    });
+    // Shake any invalid input fields
+    if (!isEmailValid) { this.emailInput.shake(); }
+    if (!isPasswordValid) { this.passwordInput.shake(); }
+    if (!isConfirmationValid) { this.confirmationInput.shake(); }
 
-    if (isEmailValid && isPasswordValid && isConfirmationValid
-      && userEmail.length > 0 && userPassword.length > 0) {
+    // If any of above is invalid, dont proceed
+    if (!isEmailValid || !isPasswordValid || !isConfirmationValid) {
+      this.setState({
+        isEmailValid, isPasswordValid, isConfirmationValid,
+      });
+      return;
+    }
+
+    const isEmailUnique = await this.validatEmailUnique(this.state.userEmail);
+    if (isEmailUnique) {
       const userInfo = {
-        userEmail,
-        userPassword,
+        userEmail: this.state.userEmail,
+        userPassword: this.state.userPassword,
       };
-
       this.props.navigation.navigate('Fullname', {
         userInfo,
       });
     }
+    this.setState({
+      isEmailValid, isPasswordValid, isConfirmationValid, isEmailUnique,
+    });
   }
 
-  // TODO: May validate email using Firebase.
+  // TODO: May validate email using Firebase to ensure uniqueness
   validateEmail(email) {
     const regex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-    return regex.test(String(email).toLowerCase());
+    return email.length > 0 && regex.test(String(email).toLowerCase());
+  }
+
+  async validatEmailUnique(email) {
+    const querySnapshot = await getEmailUnique(email);
+    return querySnapshot.size === 0;
   }
 
   renderFacebookLoginButton() {
@@ -106,6 +119,16 @@ class SignupScreen extends Component {
         onPress={this.props.loginUserWithFacebook}
       />
     );
+  }
+
+  renderErrorMessage() {
+    if (!this.state.isEmailValid) {
+      return 'Please enter a valid email address';
+    }
+    if (!this.state.isEmailUnique) {
+      return 'This email has already been registered';
+    }
+    return null;
   }
 
   render() {
@@ -124,23 +147,23 @@ class SignupScreen extends Component {
               placeholder='Email'
               keyboardType='email-address'
               onChangeText={userEmail => this.setState({ userEmail })}
-              errorMessage={this.state.isEmailValid ? null : 'Please enter a valid email address'}
+              errorMessage={this.renderErrorMessage()}
               returnKeyType='next'
             />
             <SignupInput
               reference={(input) => { this.passwordInput = input; }}
               value={this.state.userPassword}
-              isPassword={true}
+              isPassword
               placeholder='Password'
               keyboardType='default'
               onChangeText={userPassword => this.setState({ userPassword })}
-              errorMessage={this.state.isPasswordValid ? null : 'Please enter at least 8 characters'}
+              errorMessage={this.state.isPasswordValid ? null : `Please enter at least ${MINIMUM_PASSWORD_LENGTH} characters`}
               returnKeyType='next'
             />
             <SignupInput
               reference={(input) => { this.confirmationInput = input; }}
               value={this.state.passwordConfirmation}
-              isPassword={true}
+              isPassword
               placeholder='Confirm password'
               keyboardType='default'
               onChangeText={passwordConfirmation => this.setState({ passwordConfirmation })}

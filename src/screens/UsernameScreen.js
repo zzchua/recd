@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Button, Text } from 'react-native';
+import { View, StyleSheet, Button, Text, ActivityIndicator } from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { signUpUserWithEmail } from '../actions/AuthActions';
 import { SignupInput } from '../components/common';
+import { getUserNameUnique } from '../database/DatabaseUtils';
+import { MINIMUM_USERNAME_LENGTH } from '../constants';
 
 const styles = StyleSheet.create({
   container: {
@@ -20,6 +22,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  loading: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 class UsernameScreen extends Component {
@@ -28,9 +39,10 @@ class UsernameScreen extends Component {
     this.state = {
       userInfo: this.props.navigation.state.params.userInfo,
       username: '',
-      isUsernameValid: true,
+      isUsernameUnique: true,
+      isUsernameLengthValid: true,
     };
-
+    this.renderErrorMessage = this.renderErrorMessage.bind(this);
     this.signUpWithFirebase = this.signUpWithFirebase.bind(this);
   }
 
@@ -40,27 +52,67 @@ class UsernameScreen extends Component {
     }
   }
 
-  signUpWithFirebase() {
-    const {
-      userInfo,
-      username,
-      isUsernameValid,
-    } = this.state;
+  async signUpWithFirebase() {
+    const { userInfo } = this.state;
+    try {
+      // Check this first
+      const isUsernameLengthValid = this.validateUsernameLength(this.state.username);
+      if (!isUsernameLengthValid) {
+        this.usernameInput.shake();
+        this.setState({
+          isUsernameLengthValid,
+        });
+        return;
+      }
 
-    this.setState({
-      isUsernameValid: this.validateUsername(username) || this.usernameInput.shake(),
-    });
+      const isUsernameUnique = await this.validateUniqueUsername(this.state.username);
+      if (!isUsernameUnique) {
+        this.usernameInput.shake();
+        this.setState({
+          isUsernameUnique,
+        });
+        return;
+      }
 
-    if (isUsernameValid) {
-      // TODO: Move to next screen
-      userInfo.username = username;
+      userInfo.username = this.state.username;
       this.props.signUpUserWithEmail(userInfo);
+      this.setState({
+        isUsernameUnique,
+        isUsernameLengthValid,
+      });
+    } catch (error) {
+      // TODO: Handle error
     }
   }
 
-  validateUsername(username) {
-    // TODO: Need to check with firebase for existing username
-    return username.length >= 5;
+  validateUsernameLength(username) {
+    return username.length > MINIMUM_USERNAME_LENGTH;
+  }
+
+  async validateUniqueUsername(username) {
+    const querySnapshot = await getUserNameUnique(username);
+    return querySnapshot.size === 0;
+  }
+
+  renderErrorMessage() {
+    if (!this.state.isUsernameLengthValid) {
+      return 'Username must be more than 5 characters';
+    }
+    if (!this.state.isUsernameUnique) {
+      return 'This username is already taken';
+    }
+    return null;
+  }
+
+  renderLoading() {
+    if (this.props.loading) {
+      return (
+        <View style={styles.loading}>
+          <ActivityIndicator size='large' />
+        </View>
+      );
+    }
+    return null;
   }
 
   render() {
@@ -75,8 +127,8 @@ class UsernameScreen extends Component {
             isPassword={false}
             placeholder='Username'
             keyboardType='default'
-            onChangeText={username => this.setState({ username })}
-            errorMessage={this.state.isUsernameValid ? null : 'Please enter a valid first name'}
+            onChangeText={username => this.setState({ username: username.toLowerCase() })}
+            errorMessage={this.renderErrorMessage()}
             returnKeyType='done'
           />
         </View>
@@ -84,14 +136,17 @@ class UsernameScreen extends Component {
           title='Finish'
           onPress={this.signUpWithFirebase}
         />
+        {this.renderLoading()}
       </View>
     );
   }
 }
 
+// TODO: import error state
 const mapStateToProps = (state) => {
   return {
     isSignedUp: state.auth.isSignedUp,
+    loading: state.auth.loading,
   };
 };
 
@@ -105,6 +160,7 @@ UsernameScreen.propTypes = {
     navigate: PropTypes.func.isRequired,
   }).isRequired,
   isSignedUp: PropTypes.bool,
+  loading: PropTypes.bool.isRequired,
   signUpUserWithEmail: PropTypes.func.isRequired,
 };
 

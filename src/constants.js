@@ -27,3 +27,10 @@ export const SPOTIFY_API = {
   GET_SEARCH_URL: 'https://api.spotify.com/v1/search',
   TRACK_SEARCH_LIMIT: 10,
 };
+
+/**
+ * AUTH
+ */
+
+export const MINIMUM_PASSWORD_LENGTH = 8;
+export const MINIMUM_USERNAME_LENGTH = 5;

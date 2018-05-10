@@ -4,7 +4,7 @@ import { FACEBOOK } from '../constants';
 import {
   LOADING_AUTH_USER, LOGIN_USER_SUCCESS, LOGOUT_USER_SUCCESS,
   LOGIN_USER_FAIL, SIGNUP_USER_FAIL,
-  SIGNUP_USER_SUCCESS,
+  SIGNUP_USER_SUCCESS, LOADING_USER_EMAIL_SIGNUP,
 } from './types';
 
 require('firebase/firestore');
@@ -86,19 +86,42 @@ export const addUserToDatabase = (email, username, photo, firstname, lastname, u
     });
 };
 
+const titleCase = (str) => {
+  const splitStr = str.toLowerCase().split(' ');
+  for (let i = 0; i < splitStr.length; i += 1) {
+    splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
+  }
+  // Directly return the joined string
+  return splitStr.join(' ');
+};
+
 export const signUpUserWithEmail = (userInfo) => {
-  const {
-    userEmail,
-    userPassword,
-    username,
-    userImage,
-    userFirstName,
-    userLastName,
-  } = userInfo;
-
-  const userFullName = userLastName.length > 0 ? `${userFirstName} ${userLastName}` : `${userFirstName}`;
-
   return async (dispatch) => {
+    dispatch({
+      type: LOADING_USER_EMAIL_SIGNUP,
+    });
+
+    let {
+      userEmail,
+      username,
+      userFirstName,
+      userLastName,
+    } = userInfo;
+
+    const {
+      userImage,
+      userPassword,
+    } = userInfo;
+
+    // Ensure strings are consistent in case
+    userEmail = userEmail.toLowerCase();
+    username = username.toLowerCase();
+    userFirstName = titleCase(userFirstName);
+    userLastName = titleCase(userLastName);
+
+    // Display name is full name
+    const displayName = userLastName.length > 0 ? `${userFirstName} ${userLastName}` : `${userFirstName}`;
+
     firebase.auth().createUserWithEmailAndPassword(userEmail, userPassword)
       .then((user) => {
         // Create user successfully
@@ -106,7 +129,7 @@ export const signUpUserWithEmail = (userInfo) => {
         uploadProfilePicture(userImage, storageLocation)
           .then((photoURL) => {
             user.updateProfile({
-              displayName: userFullName,
+              displayName,
               photoURL,
               username,
             }).then(() => {

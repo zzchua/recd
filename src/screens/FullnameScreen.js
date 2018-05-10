@@ -30,28 +30,24 @@ class FullnameScreen extends Component {
       isFirstNameValid: true,
     };
 
-    this.moveToUsernameScreen = this.moveToUsernameScreen.bind(this);
+    this.moveToProfilePicScreen = this.moveToProfilePicScreen.bind(this);
   }
 
-  moveToUsernameScreen() {
-    const {
-      userInfo,
-      userFirstName,
-      userLastName,
-      isFirstNameValid,
-    } = this.state;
+  moveToProfilePicScreen() {
+    const { userInfo } = this.state;
+    const isFirstNameValid = this.state.userFirstName.length > 0;
+    if (!isFirstNameValid) { this.firstNameInput.shake(); }
 
-    this.setState({
-      isFirstNameValid: userFirstName.length >= 1 || this.firstNameInput.shake(),
-    });
-
-    if (isFirstNameValid && userFirstName.length > 0) {
-      userInfo.userFirstName = userFirstName;
-      userInfo.userLastName = userLastName;
+    if (isFirstNameValid) {
+      userInfo.userFirstName = this.state.userFirstName;
+      userInfo.userLastName = this.state.userLastName;
       this.props.navigation.navigate('ProfilePic', {
         userInfo,
       });
     }
+    this.setState({
+      isFirstNameValid,
+    });
   }
 
   render() {
@@ -81,7 +77,7 @@ class FullnameScreen extends Component {
         </View>
         <Button
           title='Next'
-          onPress={this.moveToUsernameScreen}
+          onPress={this.moveToProfilePicScreen}
         />
       </View>
     );

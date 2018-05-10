@@ -1,4 +1,15 @@
 import firebase from 'firebase';
+
+export const getEmailUnique = (email) => {
+  const db = firebase.firestore();
+  return db.collection('users').where('email', '==', email).get();
+};
+
+export const getUserNameUnique = (username) => {
+  const db = firebase.firestore();
+  return db.collection('users').where('username', '==', username).get();
+};
+
 /**
  * Returns a list of all users in Firebase
  */
