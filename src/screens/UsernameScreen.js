@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { signUpUserWithEmail } from '../actions/AuthActions';
 import { SignupInput } from '../components/common';
-import { getUserNameUnique } from '../database/DatabaseUtils';
+import { getUserByUsername } from '../database/DatabaseUtils';
 import { MINIMUM_USERNAME_LENGTH } from '../constants';
 
 const styles = StyleSheet.create({
@@ -90,7 +90,7 @@ class UsernameScreen extends Component {
   }
 
   async validateUniqueUsername(username) {
-    const querySnapshot = await getUserNameUnique(username);
+    const querySnapshot = await getUserByUsername(username);
     return querySnapshot.size === 0;
   }
 

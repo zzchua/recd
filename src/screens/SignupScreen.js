@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { loginUserWithFacebook } from '../actions/AuthActions';
 import { Spinner, SignupInput } from '../components/common';
 import { MINIMUM_PASSWORD_LENGTH } from '../constants';
-import { getEmailUnique } from '../database/DatabaseUtils';
+import { getUserByEmail } from '../database/DatabaseUtils';
 
 const styles = StyleSheet.create({
   container: {
@@ -57,6 +57,10 @@ class SignupScreen extends Component {
 
     this.moveToNameScreen = this.moveToNameScreen.bind(this);
     this.renderErrorMessage = this.renderErrorMessage.bind(this);
+    this.validateConfirmationPassword = this.validateConfirmationPassword.bind(this);
+    this.validateEmailAddressFormat = this.validateEmailAddressFormat.bind(this);
+    this.validateEmailUnique = this.validateEmailUnique.bind(this);
+    this.validatePassword = this.validatePassword.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -66,25 +70,15 @@ class SignupScreen extends Component {
   }
 
   async moveToNameScreen() {
-    const isEmailValid = this.validateEmail(this.state.userEmail);
-    const isPasswordValid = this.state.userPassword.length >= MINIMUM_PASSWORD_LENGTH;
-    const isConfirmationValid = this.state.userPassword === this.state.passwordConfirmation;
-
-    // Shake any invalid input fields
-    if (!isEmailValid) { this.emailInput.shake(); }
-    if (!isPasswordValid) { this.passwordInput.shake(); }
-    if (!isConfirmationValid) { this.confirmationInput.shake(); }
-
-    // If any of above is invalid, dont proceed
-    if (!isEmailValid || !isPasswordValid || !isConfirmationValid) {
-      this.setState({
-        isEmailValid, isPasswordValid, isConfirmationValid,
-      });
-      return;
+    let isEmailUnique = true;
+    const isEmailValid = this.validateEmailAddressFormat();
+    if (isEmailValid) {
+      isEmailUnique = await this.validateEmailUnique();
     }
+    const isPasswordValid = this.validatePassword();
+    const isConfirmationValid = this.validateConfirmationPassword();
 
-    const isEmailUnique = await this.validatEmailUnique(this.state.userEmail);
-    if (isEmailUnique) {
+    if (isEmailUnique && isEmailValid && isPasswordValid && isConfirmationValid) {
       const userInfo = {
         userEmail: this.state.userEmail,
         userPassword: this.state.userPassword,
@@ -93,20 +87,52 @@ class SignupScreen extends Component {
         userInfo,
       });
     }
-    this.setState({
-      isEmailValid, isPasswordValid, isConfirmationValid, isEmailUnique,
-    });
   }
 
-  // TODO: May validate email using Firebase to ensure uniqueness
-  validateEmail(email) {
+  validateEmailAddressFormat() {
+    const email = this.state.userEmail;
+    const isValid = this.validateEmailFormat(email);
+    this.setState({ isEmailValid: isValid });
+    if (!isValid) {
+      this.emailInput.shake();
+    }
+    return isValid;
+  }
+
+  async validateEmailUnique() {
+    const email = this.state.userEmail;
+    const querySnapshot = await getUserByEmail(email);
+    const isEmailUnique = querySnapshot.size === 0;
+    this.setState({ isEmailUnique });
+    if (!isEmailUnique) {
+      this.emailInput.shake();
+    }
+    return isEmailUnique;
+  }
+
+  validatePassword() {
+    const { userPassword } = this.state;
+    const isPasswordValid = userPassword.length >= MINIMUM_PASSWORD_LENGTH;
+    this.setState({ isPasswordValid });
+    if (!isPasswordValid) {
+      this.passwordInput.shake();
+    }
+    return isPasswordValid;
+  }
+
+  validateConfirmationPassword() {
+    const { passwordConfirmation, userPassword } = this.state;
+    const isConfirmationValid = passwordConfirmation === userPassword;
+    this.setState({ isConfirmationValid });
+    if (!isConfirmationValid) {
+      this.confirmationInput.shake();
+    }
+    return isConfirmationValid;
+  }
+
+  validateEmailFormat(email) {
     const regex = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
     return email.length > 0 && regex.test(String(email).toLowerCase());
-  }
-
-  async validatEmailUnique(email) {
-    const querySnapshot = await getEmailUnique(email);
-    return querySnapshot.size === 0;
   }
 
   renderFacebookLoginButton() {

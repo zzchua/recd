@@ -6,6 +6,7 @@ import {
   LOGIN_USER_FAIL, SIGNUP_USER_FAIL,
   SIGNUP_USER_SUCCESS, LOADING_USER_EMAIL_SIGNUP,
 } from './types';
+import { addUserToDatabase } from '../database/DatabaseUtils';
 
 require('firebase/firestore');
 
@@ -68,23 +69,6 @@ export const uploadProfilePicture = async (uri, storageLocation) => {
   return snapshot.downloadURL;
 };
 
-export const addUserToDatabase = (email, username, photo, firstname, lastname, uid) => {
-  // TODO: We would want to separate this into database functions
-  const db = firebase.firestore();
-  db.collection('users').doc(uid).set({
-    email,
-    photo,
-    firstname,
-    lastname,
-    username,
-  })
-    .then((docRef) => {
-      console.log('Document written with ID: ', docRef.id);
-    })
-    .catch((error) => {
-      console.log('Error adding document: ', error);
-    });
-};
 
 const titleCase = (str) => {
   const splitStr = str.toLowerCase().split(' ');

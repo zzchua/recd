@@ -1,11 +1,11 @@
 import firebase from 'firebase';
 
-export const getEmailUnique = (email) => {
+export const getUserByEmail = (email) => {
   const db = firebase.firestore();
   return db.collection('users').where('email', '==', email).get();
 };
 
-export const getUserNameUnique = (username) => {
+export const getUserByUsername = (username) => {
   const db = firebase.firestore();
   return db.collection('users').where('username', '==', username).get();
 };
@@ -18,6 +18,25 @@ export const getUserList = () => {
   const users = db.collection('users');
   return users.get();
 };
+
+export const addUserToDatabase = (email, username, photo, firstname, lastname, uid) => {
+  // TODO: We would want to separate this into database functions
+  const db = firebase.firestore();
+  db.collection('users').doc(uid).set({
+    email,
+    photo,
+    firstname,
+    lastname,
+    username,
+  })
+    .then((docRef) => {
+      console.log('Document written with ID: ', docRef.id);
+    })
+    .catch((error) => {
+      console.log('Error adding document: ', error);
+    });
+};
+
 
 /**
  * Commits spotify song recommendations to DB
