@@ -3,8 +3,9 @@ import firebase from 'firebase';
 import { FACEBOOK } from '../constants';
 import {
   LOADING_AUTH_USER, LOGIN_USER_SUCCESS, LOGOUT_USER_SUCCESS,
-  LOGIN_USER_FAIL, SIGNUP_USER_FAIL,
-  SIGNUP_USER_SUCCESS, LOADING_USER_EMAIL_SIGNUP,
+  LOGIN_USER_FAIL, SIGNUP_USER_FAIL, SIGNUP_USER_SUCCESS,
+  LOADING_USER_EMAIL_SIGNUP, LOGIN_USER_FAIL_WRONG_PASSWORD, LOGIN_USER_FAIL_NO_USER,
+  LOGIN_USER_FAIL_INVALID_EMAIL, LOGIN_USER_FAIL_USER_DISABLED,
 } from './types';
 import { addUserToDatabase } from '../database/DatabaseUtils';
 
@@ -148,6 +149,42 @@ export const signUpUserWithEmail = (userInfo) => {
               type: SIGNUP_USER_FAIL,
             });
           });
+      });
+  };
+};
+
+export const signInWithEmailAndPassword = (email, password) => {
+  return (dispatch) => {
+    dispatch({
+      type: LOADING_AUTH_USER,
+    });
+    firebase.auth().signInWithEmailAndPassword(email, password)
+      .then((user) => {
+        dispatch({
+          type: LOGIN_USER_SUCCESS,
+          payload: {
+            uid: user.uid,
+          },
+        });
+      }).catch((error) => {
+        const errorCode = error.code;
+        if (errorCode === 'auth/wrong-password') {
+          dispatch({
+            type: LOGIN_USER_FAIL_WRONG_PASSWORD,
+          });
+        } else if (errorCode === 'auth/user-not-found') {
+          dispatch({
+            type: LOGIN_USER_FAIL_NO_USER,
+          });
+        } else if (errorCode === 'auth/invalid-email') {
+          dispatch({
+            type: LOGIN_USER_FAIL_INVALID_EMAIL,
+          });
+        } else if (errorCode === 'auth/user-disable') {
+          dispatch({
+            type: LOGIN_USER_FAIL_USER_DISABLED,
+          });
+        }
       });
   };
 };

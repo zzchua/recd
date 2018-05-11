@@ -6,6 +6,10 @@ import {
   SIGNUP_USER_SUCCESS,
   SIGNUP_USER_FAIL,
   LOADING_USER_EMAIL_SIGNUP,
+  LOGIN_USER_FAIL_NO_USER,
+  LOGIN_USER_FAIL_WRONG_PASSWORD,
+  LOGIN_USER_FAIL_INVALID_EMAIL,
+  LOGIN_USER_FAIL_USER_DISABLED,
 } from '../actions/types';
 
 const INITIAL_STATE = {
@@ -13,6 +17,10 @@ const INITIAL_STATE = {
   error: false,
   isLoggedIn: false,
   uid: '',
+  errorWrongPassword: false,
+  errorNoUser: false,
+  errorInvalidEmail: false,
+  errorUserDisabled: false,
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -28,12 +36,58 @@ export default (state = INITIAL_STATE, action) => {
         isLoggedIn: true,
         loading: false,
         uid: action.payload.uid,
+        error: false,
+        errorWrongPassword: false,
+        errorNoUser: false,
+        errorInvalidEmail: false,
+        errorUserDisabled: false,
       };
     case LOGIN_USER_FAIL:
       return {
         ...state,
         isLoggedIn: false,
         loading: false,
+        error: true,
+      };
+    case LOGIN_USER_FAIL_NO_USER:
+      return {
+        ...state,
+        isLoggedIn: false,
+        loading: false,
+        errorWrongPassword: false,
+        errorNoUser: true,
+        errorInvalidEmail: false,
+        errorUserDisabled: false,
+      };
+    case LOGIN_USER_FAIL_WRONG_PASSWORD:
+      return {
+        ...state,
+        isLoggedIn: false,
+        loading: false,
+        errorWrongPassword: true,
+        errorNoUser: false,
+        errorInvalidEmail: false,
+        errorUserDisabled: false,
+      };
+    case LOGIN_USER_FAIL_INVALID_EMAIL:
+      return {
+        ...state,
+        isLoggedIn: false,
+        loading: false,
+        errorWrongPassword: false,
+        errorNoUser: false,
+        errorInvalidEmail: true,
+        errorUserDisabled: false,
+      };
+    case LOGIN_USER_FAIL_USER_DISABLED:
+      return {
+        ...state,
+        isLoggedIn: false,
+        loading: false,
+        errorWrongPassword: false,
+        errorNoUser: false,
+        errorInvalidEmail: false,
+        errorUserDisabled: true,
       };
     case LOGOUT_USER_SUCCESS:
       return {
