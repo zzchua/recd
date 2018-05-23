@@ -40,22 +40,24 @@ export const addUserToDatabase = (email, username, photo, firstname, lastname, u
 
 /**
  * Commits spotify song recommendations to DB
- * @param {*} currentUid uid of user sending the request (logged in user)
+ * @param {*} currentUid uid of sender the request (logged in user)
+ * @param {*} displayName display name of sender
  * @param {*} uids list of uids to send recd to
  * @param {*} recdItem the spotify song item to send
  */
-export const putUserRecds = (currentUid, uids, message, recdItem) => {
+export const putUserRecds = (currentUid, displayName, uids, message, recdItem) => {
   const db = firebase.firestore();
   const batch = db.batch();
   uids.forEach((uid) => {
-    // TODO: Determine behaviour for repeated sends from 
+    // TODO: Determine behaviour for repeated sends from
     // the same user and the same song
     // Given the current rid, this utilizes firebases' unique id for documents
     // So only the timestamp is updated.
     const rid = `${currentUid}::${recdItem.uri}`;
     const recdItemDocRef = db.collection('user_recds').doc(uid).collection('recd_items').doc(rid);
     batch.set(recdItemDocRef, {
-      fromUser: currentUid,
+      senderUid: currentUid,
+      senderDisplayName: displayName,
       message,
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       type: 'spotify',

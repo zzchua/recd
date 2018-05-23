@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Alert, ActivityIndicator, View, StyleSheet, ScrollView } from 'react-native';
 import { connect } from 'react-redux';
+import firebase from 'firebase';
 import PropTypes from 'prop-types';
 import { Input, ListItem, Button } from 'react-native-elements';
 import { MaterialIcons, FontAwesome } from '@expo/vector-icons';
@@ -72,6 +73,7 @@ class SendRecdScreen extends Component {
       this.setState({ userList });
     }).catch((error) => {
       // TODO: Dispatch error
+      console.log(error);
     });
   }
 
@@ -116,6 +118,7 @@ class SendRecdScreen extends Component {
   sendRecdToUsers() {
     this.props.sendRecd(
       this.props.currentUid,
+      firebase.auth().currentUser.displayName,
       this.state.selectedUsers,
       this.state.message,
       this.props.navigation.state.params.selectedTrack,

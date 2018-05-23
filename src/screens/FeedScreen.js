@@ -14,7 +14,11 @@ import { Card } from 'react-native-elements';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import RecdActionButton from '../components/RecdActionButton';
-import { getSpotifyAccessToken, retrieveRecdItems } from '../actions/FeedActions';
+import {
+  getSpotifyAccessToken,
+  retrieveRecdItems,
+  refreshFeed,
+} from '../actions/FeedActions';
 
 const styles = StyleSheet.create({
   container: {
@@ -32,9 +36,18 @@ class FeedScreen extends Component {
     header: null,
   };
 
+  constructor(props) {
+    super(props);
+    this.onPullToRefresh = this.onPullToRefresh.bind(this);
+  }
+
   componentDidMount() {
     this.props.retrieveRecdItems(this.props.uid);
     this.props.getSpotifyAccessToken();
+  }
+
+  onPullToRefresh() {
+    this.props.refreshFeed(this.props.uid);
   }
 
   renderFeedList() {
@@ -46,6 +59,8 @@ class FeedScreen extends Component {
             return this.renderFeedItem(item);
           }}
           keyExtractor={item => item.id}
+          refreshing={this.props.refreshingFeed}
+          onRefresh={this.onPullToRefresh}
         />
       );
     }
@@ -61,7 +76,7 @@ class FeedScreen extends Component {
           <Text>{item.data.recdItem.title}</Text>
           <Text>{item.data.recdItem.artists[0]}</Text>
           <Text>{item.data.message}</Text>
-          <Text>{item.data.fromUser}</Text>
+          <Text>{item.data.senderDisplayName}</Text>
         </Card>
       </TouchableNativeFeedback>
     );
@@ -91,10 +106,12 @@ class FeedScreen extends Component {
 
 FeedScreen.propTypes = {
   loading: PropTypes.bool.isRequired,
+  refreshingFeed: PropTypes.bool.isRequired,
   feedList: PropTypes.arrayOf(PropTypes.object).isRequired,
   uid: PropTypes.string.isRequired,
   getSpotifyAccessToken: PropTypes.func.isRequired,
   retrieveRecdItems: PropTypes.func.isRequired,
+  refreshFeed: PropTypes.func.isRequired,
   navigation: PropTypes.shape({
     navigate: PropTypes.func.isRequired,
   }).isRequired,
@@ -105,12 +122,14 @@ const mapStateToProps = (state) => {
     uid: state.auth.uid,
     feedList: state.feed.feedList,
     loading: state.feed.loading,
+    refreshingFeed: state.feed.refreshingFeed,
   };
 };
 
 const mapDispatchToProps = {
   getSpotifyAccessToken,
   retrieveRecdItems,
+  refreshFeed,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(FeedScreen);

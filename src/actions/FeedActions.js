@@ -7,6 +7,9 @@ import {
   GET_RECD_ITEMS_SUCCESS,
   GET_RECD_ITEMS_LOADING,
   GET_RECD_ITEMS_FAILURE,
+  REFRESH_RECD_ITEMS_LOADING,
+  REFRESH_RECD_ITEMS_SUCCESS,
+  REFRESH_RECD_ITEMS_FAILURE,
 } from './types';
 
 /**
@@ -48,6 +51,28 @@ export const retrieveRecdItems = (uid) => {
     }).catch(() => {
       dispatch({
         type: GET_RECD_ITEMS_FAILURE,
+      });
+    });
+  };
+};
+
+export const refreshFeed = (uid) => {
+  return (dispatch) => {
+    dispatch({
+      type: REFRESH_RECD_ITEMS_LOADING,
+    });
+    getRecdItems(uid).then((querySnapshot) => {
+      const feedItems = [];
+      querySnapshot.forEach((item) => {
+        feedItems.push({ id: item.id, data: item.data() });
+      });
+      dispatch({
+        type: REFRESH_RECD_ITEMS_SUCCESS,
+        payload: feedItems,
+      });
+    }).catch(() => {
+      dispatch({
+        type: REFRESH_RECD_ITEMS_FAILURE,
       });
     });
   };
