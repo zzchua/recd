@@ -1,9 +1,15 @@
 import Expo from 'expo';
 import firebase from 'firebase';
-import { FACEBOOK } from '../constants';
+import {
+  FACEBOOK,
+  FIREBASE_AUTH_ERROR_INVALID_EMAIL,
+  FIREBASE_AUTH_ERROR_USER_DISABLED,
+  FIREBASE_AUTH_ERROR_WRONG_PASSWORD,
+  FIREBASE_AUTH_ERROR_NO_USER,
+} from '../constants';
 import {
   LOADING_AUTH_USER, LOGIN_USER_SUCCESS, LOGOUT_USER_SUCCESS,
-  LOGIN_USER_FAIL, SIGNUP_USER_FAIL, SIGNUP_USER_SUCCESS,
+  FB_LOGIN_USER_FAIL, SIGNUP_USER_FAIL, SIGNUP_USER_SUCCESS,
   LOADING_USER_EMAIL_SIGNUP, LOGIN_USER_FAIL_WRONG_PASSWORD, LOGIN_USER_FAIL_NO_USER,
   LOGIN_USER_FAIL_INVALID_EMAIL, LOGIN_USER_FAIL_USER_DISABLED,
 } from './types';
@@ -11,7 +17,7 @@ import { addUserToDatabase } from '../database/DatabaseUtils';
 
 require('firebase/firestore');
 
-export const userAlreadyLoggedIn = (uid) => {
+export const userLoggedIn = (uid) => {
   return {
     type: LOGIN_USER_SUCCESS,
     payload: {
@@ -36,26 +42,18 @@ export const loginUserWithFacebook = () => {
         const credential = firebase.auth.FacebookAuthProvider.credential(token);
         await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
         await firebase.auth().signInWithCredential(credential);
-        const { displayName, uid } = firebase.auth().currentUser;
-        dispatch({
-          type: LOGIN_USER_SUCCESS,
-          payload: {
-            uid,
-          },
-        });
-        console.log(`Logged in ${displayName}`);
       } else {
         // Facebook Login Errors
         // Note: if type = 'cancel' user cancelled login
         dispatch({
-          type: LOGIN_USER_FAIL,
+          type: FB_LOGIN_USER_FAIL,
         });
       }
     } catch (error) {
       // TODO: Needs to figure out how to handle or log errors
       console.log(error);
       dispatch({
-        type: LOGIN_USER_FAIL,
+        type: FB_LOGIN_USER_FAIL,
       });
     }
   };
@@ -159,28 +157,21 @@ export const signInWithEmailAndPassword = (email, password) => {
       type: LOADING_AUTH_USER,
     });
     firebase.auth().signInWithEmailAndPassword(email, password)
-      .then((user) => {
-        dispatch({
-          type: LOGIN_USER_SUCCESS,
-          payload: {
-            uid: user.uid,
-          },
-        });
-      }).catch((error) => {
+      .catch((error) => {
         const errorCode = error.code;
-        if (errorCode === 'auth/wrong-password') {
+        if (errorCode === FIREBASE_AUTH_ERROR_WRONG_PASSWORD) {
           dispatch({
             type: LOGIN_USER_FAIL_WRONG_PASSWORD,
           });
-        } else if (errorCode === 'auth/user-not-found') {
+        } else if (errorCode === FIREBASE_AUTH_ERROR_NO_USER) {
           dispatch({
             type: LOGIN_USER_FAIL_NO_USER,
           });
-        } else if (errorCode === 'auth/invalid-email') {
+        } else if (errorCode === FIREBASE_AUTH_ERROR_INVALID_EMAIL) {
           dispatch({
             type: LOGIN_USER_FAIL_INVALID_EMAIL,
           });
-        } else if (errorCode === 'auth/user-disable') {
+        } else if (errorCode === FIREBASE_AUTH_ERROR_USER_DISABLED) {
           dispatch({
             type: LOGIN_USER_FAIL_USER_DISABLED,
           });

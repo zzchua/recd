@@ -1,17 +1,20 @@
 import React, { Component } from 'react';
-import { View, ActivityIndicator, StatusBar, StyleSheet } from 'react-native';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Font } from 'expo';
 import firebase from 'firebase';
 import { FIREBASE } from './constants';
 import RootNavigator from './navigation/RootNavigator';
-import { userAlreadyLoggedIn } from './actions/AuthActions';
+import { userLoggedIn } from './actions/AuthActions';
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
+  loading: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -37,10 +40,9 @@ class Root extends Component {
 
     // Listen for authentication state to change.
     firebase.auth().onAuthStateChanged((user) => {
-      console.log('checking auth');
       if (user != null) {
         console.log('User is logged in');
-        this.props.userAlreadyLoggedIn(user.uid);
+        this.props.userLoggedIn(user.uid);
       } else {
         console.log('User is logged out');
       }
@@ -82,16 +84,15 @@ class Root extends Component {
       );
     }
     return (
-      <View style={styles.container}>
-        <ActivityIndicator />
-        <StatusBar barStyle='default' />
+      <View style={styles.loading}>
+        <ActivityIndicator size='large' />
       </View>
     );
   }
 }
 
 Root.propTypes = {
-  userAlreadyLoggedIn: PropTypes.func.isRequired,
+  userLoggedIn: PropTypes.func.isRequired,
   isLoggedIn: PropTypes.bool.isRequired,
 };
 
@@ -102,7 +103,7 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = {
-  userAlreadyLoggedIn,
+  userLoggedIn,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Root);

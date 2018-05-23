@@ -2,7 +2,7 @@ import {
   LOGIN_USER_SUCCESS,
   LOGOUT_USER_SUCCESS,
   LOADING_AUTH_USER,
-  LOGIN_USER_FAIL,
+  FB_LOGIN_USER_FAIL,
   SIGNUP_USER_SUCCESS,
   SIGNUP_USER_FAIL,
   LOADING_USER_EMAIL_SIGNUP,
@@ -15,6 +15,8 @@ import {
 const INITIAL_STATE = {
   loading: false,
   error: false,
+  fbLoginError: false,
+  signUpError: false,
   isLoggedIn: false,
   uid: '',
   errorWrongPassword: false,
@@ -36,18 +38,18 @@ export default (state = INITIAL_STATE, action) => {
         isLoggedIn: true,
         loading: false,
         uid: action.payload.uid,
-        error: false,
+        fbLoginError: false,
         errorWrongPassword: false,
         errorNoUser: false,
         errorInvalidEmail: false,
         errorUserDisabled: false,
       };
-    case LOGIN_USER_FAIL:
+    case FB_LOGIN_USER_FAIL:
       return {
         ...state,
         isLoggedIn: false,
         loading: false,
-        error: true,
+        fbLoginError: true,
       };
     case LOGIN_USER_FAIL_NO_USER:
       return {
@@ -95,20 +97,18 @@ export default (state = INITIAL_STATE, action) => {
         isLoggedIn: false,
         loading: false,
         uid: '',
-        isSignedUp: false,
       };
     case SIGNUP_USER_SUCCESS:
       return {
         ...state,
-        isSignedUp: true,
         uid: action.payload.uid,
         loading: false,
+        signUpError: false,
       };
     case SIGNUP_USER_FAIL:
       return {
         ...state,
-        isSignedUp: false,
-        error: true,
+        signUpError: true,
         loading: false,
       };
     case LOADING_USER_EMAIL_SIGNUP:

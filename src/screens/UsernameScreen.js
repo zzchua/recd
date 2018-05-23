@@ -47,7 +47,7 @@ class UsernameScreen extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.isSignedUp) {
+    if (nextProps.uid !== '') {
       this.props.navigation.navigate('App');
     }
   }
@@ -145,8 +145,8 @@ class UsernameScreen extends Component {
 // TODO: import error state
 const mapStateToProps = (state) => {
   return {
-    isSignedUp: state.auth.isSignedUp,
     loading: state.auth.loading,
+    uid: state.auth.uid,
   };
 };
 
@@ -159,13 +159,9 @@ UsernameScreen.propTypes = {
     state: PropTypes.shape().isRequired,
     navigate: PropTypes.func.isRequired,
   }).isRequired,
-  isSignedUp: PropTypes.bool,
   loading: PropTypes.bool.isRequired,
   signUpUserWithEmail: PropTypes.func.isRequired,
-};
-
-UsernameScreen.defaultProps = {
-  isSignedUp: false,
+  uid: PropTypes.string.isRequired,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(UsernameScreen);

@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-around',
   },
   logoContainer: {
     flex: 2,
@@ -19,12 +19,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   formContainer: {
+    flex: 3,
     backgroundColor: 'gray',
     width: 400,
     borderRadius: 10,
     paddingBottom: 32,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-evenly',
   },
   loading: {
     position: 'absolute',
@@ -76,6 +77,9 @@ class LoginScreen extends Component {
     }
     if (this.props.noUserError) {
       return 'No such user with email address';
+    }
+    if (this.props.disabledUserError) {
+      return 'This account has been disabled';
     }
     return null;
   }

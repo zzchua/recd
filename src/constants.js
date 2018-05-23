@@ -31,6 +31,9 @@ export const SPOTIFY_API = {
 /**
  * AUTH
  */
-
+export const FIREBASE_AUTH_ERROR_WRONG_PASSWORD = 'auth/wrong-password';
+export const FIREBASE_AUTH_ERROR_NO_USER = 'auth/user-not-found';
+export const FIREBASE_AUTH_ERROR_INVALID_EMAIL = 'auth/invalid-email';
+export const FIREBASE_AUTH_ERROR_USER_DISABLED = 'auth/user-disable';
 export const MINIMUM_PASSWORD_LENGTH = 8;
 export const MINIMUM_USERNAME_LENGTH = 5;
