@@ -18,6 +18,9 @@ import {
   GET_SECONDARY_USER_INFO_FAILURE,
   FACEBOOK_LOGIN_NEW_USER,
   FACEBOOK_LOGIN_EXISTING_USER,
+  UPDATE_USER_PROFILE_LOADING,
+  UPDATE_USER_PROFILE_ERROR,
+  UPDATE_USER_PROFILE_SUCCESS,
 } from './types';
 import {
   addUserToDatabase,
@@ -181,7 +184,13 @@ export const signUpUserWithEmail = (userInfo) => {
                   uid: user.uid,
                 },
               });
-              addUserToDatabase(username, userFirstName, userLastName, user.uid);
+              addUserToDatabase(username, userFirstName, userLastName, user.uid)
+                .catch((error) => {
+                  console.log(error);
+                  dispatch({
+                    type: SIGNUP_USER_FAIL,
+                  });
+                });
             }).catch((error) => {
               // Unable to add display name, may want to delete user
               // TODO: Needs to figure out how to handle or log errors
@@ -234,6 +243,38 @@ export const signInWithEmailAndPassword = (email, password) => {
       });
   };
 };
+
+/**
+ * Updates user's firebase profile and adds user record to database
+ * This should only be used for a new user who logs in via Facebook
+ * @param {*} email the email to be updated or '' if not required to update
+ * @param {*} username 
+ * @param {*} firstName 
+ * @param {*} lastName 
+ * @param {*} photoURI the uri of the picture to upload or '' if not required to update
+ */
+export const updateFirebaseUserAndAddSecondaryDetails =
+  (email, username, firstName, lastName, photoURI) => {
+    const user = firebase.auth().currentUser;
+    return async (dispatch) => {
+      dispatch({ type: UPDATE_USER_PROFILE_LOADING });
+      try {
+        const displayName = lastName.length > 0 ? `${firstName} ${lastName}` : `${firstName}`;
+        await user.updateProfile({ displayName });
+        await addUserToDatabase(username, firstName, lastName, user.uid);
+        if (photoURI !== '') {
+          const photoURL = await uploadProfilePicture(photoURI, user.uid);
+          await user.updateProfile({ photoURL });
+        }
+        if (email !== '') {
+          await user.updateEmail(email);
+        }
+      } catch (error) {
+        dispatch({ type: UPDATE_USER_PROFILE_ERROR });
+      }
+      dispatch({ type: UPDATE_USER_PROFILE_SUCCESS });
+    };
+  };
 
 export const logoutUser = () => {
   return async (dispatch) => {

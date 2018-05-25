@@ -14,6 +14,9 @@ import {
   GET_SECONDARY_USER_INFO_NOT_FOUND,
   FACEBOOK_LOGIN_NEW_USER,
   FACEBOOK_LOGIN_EXISTING_USER,
+  UPDATE_USER_PROFILE_ERROR,
+  UPDATE_USER_PROFILE_SUCCESS,
+  UPDATE_USER_PROFILE_LOADING,
 } from '../actions/types';
 
 const INITIAL_STATE = {
@@ -31,6 +34,8 @@ const INITIAL_STATE = {
   errorInvalidEmail: false,
   errorUserDisabled: false,
   isFacebookNewUser: false,
+  updateUserProfileError: false,
+  userProfileUpdated: false,
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -134,6 +139,23 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         loading: true,
+      };
+    case UPDATE_USER_PROFILE_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        userProfileUpdated: true,
+      };
+    case UPDATE_USER_PROFILE_LOADING:
+      return {
+        ...state,
+        loading: true,
+      };
+    case UPDATE_USER_PROFILE_ERROR:
+      return {
+        ...state,
+        loading: false,
+        userProfileUpdated: false,
       };
     case LOGOUT_USER_SUCCESS:
       return INITIAL_STATE;

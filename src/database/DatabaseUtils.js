@@ -25,19 +25,12 @@ export const getUserList = () => {
 };
 
 export const addUserToDatabase = (username, firstname, lastname, uid) => {
-  // TODO: We would want to separate this into database functions
   const db = firebase.firestore();
-  db.collection('users').doc(uid).set({
+  return db.collection('users').doc(uid).set({
     firstname,
     lastname,
     username,
-  })
-    .then(() => {
-      console.log();
-    })
-    .catch((error) => {
-      console.log('Error adding document: ', error);
-    });
+  });
 };
 
 
