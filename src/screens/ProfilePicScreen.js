@@ -38,10 +38,9 @@ class ProfilePicScreen extends Component {
   async pickProfilePic() {
     const result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [3, 3],
+      quality: 0.5,
     });
-
-
     if (!result.cancelled) {
       this.setState({ userImage: result.uri });
     }

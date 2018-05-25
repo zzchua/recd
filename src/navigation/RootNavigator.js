@@ -1,19 +1,19 @@
 import { SwitchNavigator } from 'react-navigation';
-import MainTabNavigator from './MainTabNavigator';
+import AppNavigator from './AppNavigator';
 import AuthNavigator from './AuthNavigator';
 
-export default (isLoggedIn) => {
+export default (uid) => {
   return SwitchNavigator(
     {
       App: {
-        screen: MainTabNavigator,
+        screen: AppNavigator,
       },
       Auth: {
         screen: AuthNavigator,
       },
     },
     {
-      initialRouteName: isLoggedIn ? 'App' : 'Auth',
+      initialRouteName: uid !== '' ? 'App' : 'Auth',
     },
   );
 };

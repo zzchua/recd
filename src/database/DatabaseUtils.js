@@ -1,5 +1,10 @@
 import firebase from 'firebase';
 
+export const getUserByUid = (uid) => {
+  const db = firebase.firestore();
+  return db.collection('users').doc(uid).get();
+};
+
 export const getUserByEmail = (email) => {
   const db = firebase.firestore();
   return db.collection('users').where('email', '==', email).get();
@@ -19,18 +24,16 @@ export const getUserList = () => {
   return users.get();
 };
 
-export const addUserToDatabase = (email, username, photo, firstname, lastname, uid) => {
+export const addUserToDatabase = (username, firstname, lastname, uid) => {
   // TODO: We would want to separate this into database functions
   const db = firebase.firestore();
   db.collection('users').doc(uid).set({
-    email,
-    photo,
     firstname,
     lastname,
     username,
   })
-    .then((docRef) => {
-      console.log('Document written with ID: ', docRef.id);
+    .then(() => {
+      console.log();
     })
     .catch((error) => {
       console.log('Error adding document: ', error);

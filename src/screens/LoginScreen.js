@@ -2,7 +2,11 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Button, Text, ActivityIndicator } from 'react-native';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { loginUserWithFacebook, signInWithEmailAndPassword } from '../actions/AuthActions';
+import {
+  loginUserWithFacebook,
+  signInWithEmailAndPassword,
+  getSecondaryUserInfo,
+} from '../actions/AuthActions';
 import { SignupInput } from '../components/common';
 
 const styles = StyleSheet.create({
@@ -50,12 +54,6 @@ class LoginScreen extends Component {
       userPassword: '',
     };
     this.onLoginWithEmailAndPassword = this.onLoginWithEmailAndPassword.bind(this);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.isLoggedIn) {
-      this.props.navigation.navigate('App');
-    }
   }
 
   onLoginWithEmailAndPassword() {
@@ -133,7 +131,7 @@ class LoginScreen extends Component {
         <View style={styles.logoContainer}>
           <Button
             title='Sign up'
-            onPress={() => {}}
+            onPress={() => this.props.navigation.navigate('SignUp')}
           />
         </View>
         {this.renderLoadingSuccessFailure()}
@@ -144,18 +142,20 @@ class LoginScreen extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    isLoggedIn: state.auth.isLoggedIn,
     loading: state.auth.loading,
     passwordError: state.auth.errorWrongPassword,
     noUserError: state.auth.errorNoUser,
     invalidEmailError: state.auth.errorInvalidEmail,
     disabledUserError: state.auth.errorUserDisabled,
+    uid: state.auth.uid,
+    isFacebookNewUser: state.auth.isFacebookNewUser,
   };
 };
 
 const mapDispatchToProps = {
   loginUserWithFacebook,
   signInWithEmailAndPassword,
+  getSecondaryUserInfo,
 };
 
 LoginScreen.propTypes = {
@@ -166,7 +166,6 @@ LoginScreen.propTypes = {
   loginUserWithFacebook: PropTypes.func.isRequired,
   signInWithEmailAndPassword: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
-  isLoggedIn: PropTypes.bool.isRequired,
   navigation: PropTypes.shape({
     navigate: PropTypes.func.isRequired,
   }).isRequired,

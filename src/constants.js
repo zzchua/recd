@@ -15,7 +15,7 @@ export const FIREBASE = {
  */
 export const FACEBOOK = {
   APP_ID: '1806188016109251',
-  GRAPH_API_URL: 'https://graph.facebook.com/me',
+  GRAPH_API_URL: 'https://graph.facebook.com/',
   PERMISIONS: ['public_profile', 'email'],
 };
 
@@ -37,3 +37,10 @@ export const FIREBASE_AUTH_ERROR_INVALID_EMAIL = 'auth/invalid-email';
 export const FIREBASE_AUTH_ERROR_USER_DISABLED = 'auth/user-disable';
 export const MINIMUM_PASSWORD_LENGTH = 8;
 export const MINIMUM_USERNAME_LENGTH = 5;
+
+/**
+ * 3 WAY
+ */
+export const UNSET = '0';
+export const SET_TRUE = '2';
+export const SET_FALSE = '1';

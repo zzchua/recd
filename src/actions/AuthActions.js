@@ -1,5 +1,6 @@
 import Expo from 'expo';
 import firebase from 'firebase';
+import axios from 'axios';
 import {
   FACEBOOK,
   FIREBASE_AUTH_ERROR_INVALID_EMAIL,
@@ -10,20 +11,66 @@ import {
 import {
   LOADING_AUTH_USER, LOGIN_USER_SUCCESS, LOGOUT_USER_SUCCESS,
   FB_LOGIN_USER_FAIL, SIGNUP_USER_FAIL, SIGNUP_USER_SUCCESS,
-  LOADING_USER_EMAIL_SIGNUP, LOGIN_USER_FAIL_WRONG_PASSWORD, LOGIN_USER_FAIL_NO_USER,
+  SIGNUP_USER_LOADING, LOGIN_USER_FAIL_WRONG_PASSWORD, LOGIN_USER_FAIL_NO_USER,
   LOGIN_USER_FAIL_INVALID_EMAIL, LOGIN_USER_FAIL_USER_DISABLED,
+  GET_SECONDARY_USER_INFO_SUCCESS,
+  GET_SECONDARY_USER_INFO_NOT_FOUND,
+  GET_SECONDARY_USER_INFO_FAILURE,
+  FACEBOOK_LOGIN_NEW_USER,
+  FACEBOOK_LOGIN_EXISTING_USER,
 } from './types';
-import { addUserToDatabase } from '../database/DatabaseUtils';
+import {
+  addUserToDatabase,
+  getUserByUid,
+} from '../database/DatabaseUtils';
 
 require('firebase/firestore');
 
-export const userLoggedIn = (uid) => {
+export const getSecondaryUserInfo = (uid) => {
+  return (dispatch) => {
+    getUserByUid(uid).then((doc) => {
+      if (doc.exists) {
+        dispatch({
+          type: GET_SECONDARY_USER_INFO_SUCCESS,
+          payload: {
+            username: doc.data().username,
+          },
+        });
+      } else {
+        dispatch({
+          type: GET_SECONDARY_USER_INFO_NOT_FOUND,
+        });
+      }
+    }).catch((error) => {
+      console.log(error);
+      dispatch({
+        type: GET_SECONDARY_USER_INFO_FAILURE,
+      });
+    });
+  };
+};
+
+export const userLoggedIn = ({
+  uid, displayName, email, photoURL,
+}) => {
   return {
     type: LOGIN_USER_SUCCESS,
     payload: {
       uid,
+      displayName,
+      email,
+      photoURL,
     },
   };
+};
+
+export const uploadProfilePicture = async (uri, uid) => {
+  const storageLocation = `users/${uid}/photos/profile.jpg`;
+  const response = await fetch(uri);
+  const blob = await response.blob();
+  const ref = firebase.storage().ref(storageLocation);
+  const snapshot = await ref.put(blob);
+  return snapshot.downloadURL;
 };
 
 export const loginUserWithFacebook = () => {
@@ -41,7 +88,30 @@ export const loginUserWithFacebook = () => {
         // Sign in with credential from the Facebook user.
         const credential = firebase.auth.FacebookAuthProvider.credential(token);
         await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-        await firebase.auth().signInWithCredential(credential);
+        const { user, additionalUserInfo } =
+          await firebase.auth().signInAndRetrieveDataWithCredential(credential);
+        // If is a new fb signup, we need to get a large profile picture 
+        // as well as get secondary details
+        if (additionalUserInfo.isNewUser) {
+          try {
+            const response = await axios.get(`${FACEBOOK.GRAPH_API_URL}me?access_token=${token}`);
+            const fbUid = response.data.id;
+            const fbProfilePicGetURL = `${FACEBOOK.GRAPH_API_URL}${fbUid}/picture?type=large&access_token=${token}`;
+            const photoURL = await uploadProfilePicture(fbProfilePicGetURL, user.uid);
+            await user.updateProfile({ photoURL });
+            dispatch({
+              type: FACEBOOK_LOGIN_NEW_USER,
+              payload: {
+                photoURL,
+              },
+            });
+          } catch (error) {
+            // TODO: Need to handle this error of failing to upload large picture
+            console.log(error);
+          }
+        } else {
+          dispatch({ type: FACEBOOK_LOGIN_EXISTING_USER });
+        }
       } else {
         // Facebook Login Errors
         // Note: if type = 'cancel' user cancelled login
@@ -59,16 +129,6 @@ export const loginUserWithFacebook = () => {
   };
 };
 
-export const uploadProfilePicture = async (uri, storageLocation) => {
-  const response = await fetch(uri);
-  const blob = await response.blob();
-  const ref = firebase.storage().ref(storageLocation);
-  const snapshot = await ref.put(blob);
-
-  return snapshot.downloadURL;
-};
-
-
 const titleCase = (str) => {
   const splitStr = str.toLowerCase().split(' ');
   for (let i = 0; i < splitStr.length; i += 1) {
@@ -81,7 +141,7 @@ const titleCase = (str) => {
 export const signUpUserWithEmail = (userInfo) => {
   return async (dispatch) => {
     dispatch({
-      type: LOADING_USER_EMAIL_SIGNUP,
+      type: SIGNUP_USER_LOADING,
     });
 
     let {
@@ -108,13 +168,11 @@ export const signUpUserWithEmail = (userInfo) => {
     firebase.auth().createUserWithEmailAndPassword(userEmail, userPassword)
       .then((user) => {
         // Create user successfully
-        const storageLocation = `users/${user.uid}/photos/profile.jpg`;
-        uploadProfilePicture(userImage, storageLocation)
+        uploadProfilePicture(userImage, user.uid)
           .then((photoURL) => {
             user.updateProfile({
               displayName,
               photoURL,
-              username,
             }).then(() => {
               dispatch({
                 // Add display name successfully
@@ -123,10 +181,7 @@ export const signUpUserWithEmail = (userInfo) => {
                   uid: user.uid,
                 },
               });
-              addUserToDatabase(
-                userEmail, username, photoURL,
-                userFirstName, userLastName, user.uid,
-              );
+              addUserToDatabase(username, userFirstName, userLastName, user.uid);
             }).catch((error) => {
               // Unable to add display name, may want to delete user
               // TODO: Needs to figure out how to handle or log errors

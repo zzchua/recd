@@ -11,6 +11,7 @@ const SignupInput = ({
   onChangeText,
   errorMessage,
   returnKeyType,
+  label,
 }) => {
   return (
     <Input
@@ -29,6 +30,7 @@ const SignupInput = ({
       keyboardAppearance='light'
       inputStyle={{ marginLeft: 10 }}
       containerStyle={{ borderBottomColor: 'rgba(0, 0, 0, 0.38)' }}
+      label={label}
     />
   );
 };
@@ -42,11 +44,13 @@ SignupInput.propTypes = {
   onChangeText: PropTypes.func.isRequired,
   errorMessage: PropTypes.string,
   returnKeyType: PropTypes.string.isRequired,
+  label: PropTypes.string,
 };
 
 SignupInput.defaultProps = {
   errorMessage: null,
   reference: null,
+  label: null,
 };
 
 

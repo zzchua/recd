@@ -11,7 +11,7 @@ class ProfileScreen extends Component {
   };
 
   componentWillReceiveProps(nextProps) {
-    if (!nextProps.isLoggedIn) {
+    if (nextProps.uid === '') {
       this.props.navigation.navigate('Auth');
     }
   }
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
 ProfileScreen.propTypes = {
   logoutUser: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
-  isLoggedIn: PropTypes.bool.isRequired,
+  uid: PropTypes.string.isRequired,
   navigation: PropTypes.shape({
     navigate: PropTypes.func.isRequired,
   }).isRequired,
@@ -58,7 +58,7 @@ ProfileScreen.propTypes = {
 
 const mapStateToProps = (state) => {
   return {
-    isLoggedIn: state.auth.isLoggedIn,
+    uid: state.auth.uid,
     loading: state.auth.loading,
   };
 };

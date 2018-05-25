@@ -6,7 +6,7 @@ import { Font } from 'expo';
 import firebase from 'firebase';
 import { FIREBASE } from './constants';
 import RootNavigator from './navigation/RootNavigator';
-import { userLoggedIn } from './actions/AuthActions';
+import { userLoggedIn, getSecondaryUserInfo } from './actions/AuthActions';
 
 const styles = StyleSheet.create({
   loading: {
@@ -42,7 +42,8 @@ class Root extends Component {
     firebase.auth().onAuthStateChanged((user) => {
       if (user != null) {
         console.log('User is logged in');
-        this.props.userLoggedIn(user.uid);
+        this.props.userLoggedIn(user);
+        this.props.getSecondaryUserInfo(user.uid);
       } else {
         console.log('User is logged out');
       }
@@ -77,7 +78,7 @@ class Root extends Component {
   }
 
   render() {
-    const RootNav = RootNavigator(this.props.isLoggedIn);
+    const RootNav = RootNavigator(this.props.uid);
     if (this.state.isFontReady && this.state.isAuthReady) {
       return (
         <RootNav />
@@ -93,17 +94,19 @@ class Root extends Component {
 
 Root.propTypes = {
   userLoggedIn: PropTypes.func.isRequired,
-  isLoggedIn: PropTypes.bool.isRequired,
+  uid: PropTypes.string.isRequired,
+  getSecondaryUserInfo: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => {
   return {
-    isLoggedIn: state.auth.isLoggedIn,
+    uid: state.auth.uid,
   };
 };
 
 const mapDispatchToProps = {
   userLoggedIn,
+  getSecondaryUserInfo,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Root);

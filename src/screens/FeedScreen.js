@@ -36,8 +36,16 @@ class FeedScreen extends Component {
     header: null,
   };
 
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.isFacebookNewUser) {
+      nextProps.navigation.navigate('SecondaryDetailsModal');
+    }
+    return prevState;
+  }
+
   constructor(props) {
     super(props);
+    this.state = {};
     this.onPullToRefresh = this.onPullToRefresh.bind(this);
   }
 
@@ -105,6 +113,7 @@ class FeedScreen extends Component {
 }
 
 FeedScreen.propTypes = {
+  isFacebookNewUser: PropTypes.bool.isRequired,
   loading: PropTypes.bool.isRequired,
   refreshingFeed: PropTypes.bool.isRequired,
   feedList: PropTypes.arrayOf(PropTypes.object).isRequired,
@@ -123,6 +132,7 @@ const mapStateToProps = (state) => {
     feedList: state.feed.feedList,
     loading: state.feed.loading,
     refreshingFeed: state.feed.refreshingFeed,
+    isFacebookNewUser: state.auth.isFacebookNewUser,
   };
 };
 
