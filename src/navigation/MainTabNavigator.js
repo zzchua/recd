@@ -1,5 +1,4 @@
 import React from 'react';
-import { Platform, StatusBar } from 'react-native';
 import { TabNavigator } from 'react-navigation';
 import { MaterialIcons } from '@expo/vector-icons';
 import FeedNavigator from './FeedNavigator';

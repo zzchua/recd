@@ -31,18 +31,19 @@ class RecdActionButton extends Component {
         >
           <FontAwesome name='send-o' style={styles.actionButtonIcon} />
         </ActionButton.Item>
-        <ActionButton.Item
-          size={50}
-          buttonColor='#3498db'
-          title="Request a Rec'd"
-          onPress={() => { console.log('request a rec!'); }}
-        >
-          <Entypo name='chat' style={styles.actionButtonIcon} />
-        </ActionButton.Item>
       </ActionButton>
     );
   }
 }
+
+// <ActionButton.Item
+//   size={50}
+//   buttonColor='#3498db'
+//   title="Request a Rec'd"
+//   onPress={() => { console.log('request a rec!'); }}
+// >
+//   <Entypo name='chat' style={styles.actionButtonIcon} />
+// </ActionButton.Item>
 
 const mapDispatchToProps = {
   showRecdModal,
