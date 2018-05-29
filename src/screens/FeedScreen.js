@@ -41,15 +41,17 @@ class FeedScreen extends Component {
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.isFacebookNewUser) {
+    console.log(prevState);
+    if (nextProps.isFacebookNewUser && prevState.isFacebookNewUser === false) {
       nextProps.navigation.navigate('SecondaryDetailsModal');
+      return { isFacebookNewUser: nextProps.isFacebookNewUser };
     }
     return prevState;
   }
 
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = { isFacebookNewUser: false };
     this.onPullToRefresh = this.onPullToRefresh.bind(this);
   }
 

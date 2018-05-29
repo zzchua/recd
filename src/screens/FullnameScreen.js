@@ -35,7 +35,7 @@ class FullnameScreen extends Component {
 
   moveToProfilePicScreen() {
     const { userInfo } = this.state;
-    const isFirstNameValid = this.state.userFirstName.length > 0;
+    const isFirstNameValid = this.state.userFirstName.trim().length > 0;
     if (!isFirstNameValid) { this.firstNameInput.shake(); }
 
     if (isFirstNameValid) {

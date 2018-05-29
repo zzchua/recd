@@ -1,22 +1,34 @@
 import firebase from 'firebase';
 
+/**
+ * Returns a promise containing the user with the specifid uid
+ * @param {string} uid
+ */
 export const getUserByUid = (uid) => {
   const db = firebase.firestore();
   return db.collection('users').doc(uid).get();
 };
 
+/**
+ * Returns a promise containing the user with the specified email
+ * @param {string} email
+ */
 export const getUserByEmail = (email) => {
   const db = firebase.firestore();
   return db.collection('users').where('email', '==', email).get();
 };
 
+/**
+ * Returns a promise containing the user with the specified username
+ * @param {string} username
+ */
 export const getUserByUsername = (username) => {
   const db = firebase.firestore();
   return db.collection('users').where('username', '==', username).get();
 };
 
 /**
- * Returns a list of all users in Firebase
+ * Returns a promise containing a list of all users in Firebase
  */
 export const getUserList = () => {
   const db = firebase.firestore();
@@ -24,6 +36,15 @@ export const getUserList = () => {
   return users.get();
 };
 
+/**
+ * Adds a user to the users database. Will overwrite the existing document if uid already exists
+ * @param {string} username
+ * @param {string} firstname
+ * @param {string} lastname
+ * @param {string} photo
+ * @param {string} email
+ * @param {string} uid
+ */
 export const addUserToDatabase = (username, firstname, lastname, photo, email, uid) => {
   const db = firebase.firestore();
   return db.collection('users').doc(uid).set({
@@ -35,6 +56,17 @@ export const addUserToDatabase = (username, firstname, lastname, photo, email, u
   });
 };
 
+/**
+ * Updates or adds a user to the database. Will merge changes to existing document.
+ * If any of the parameters is empty string, will not be updated
+ * uid is required
+ * @param {string} username
+ * @param {string} firstname
+ * @param {string} lastname
+ * @param {string} photo
+ * @param {string} email
+ * @param {string} uid
+ */
 export const updateUserDetailsToDatabase = (username, firstname, lastname, photo, email, uid) => {
   const db = firebase.firestore();
   const data = {};
