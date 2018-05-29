@@ -24,13 +24,27 @@ export const getUserList = () => {
   return users.get();
 };
 
-export const addUserToDatabase = (username, firstname, lastname, uid) => {
+export const addUserToDatabase = (username, firstname, lastname, photo, email, uid) => {
   const db = firebase.firestore();
   return db.collection('users').doc(uid).set({
     firstname,
     lastname,
     username,
+    photo,
+    email,
   });
+};
+
+export const updateUserDetailsToDatabase = (username, firstname, lastname, photo, email, uid) => {
+  const db = firebase.firestore();
+  const data = {};
+  if (username !== '') { data.username = username; }
+  if (firstname !== '') { data.firstname = firstname; }
+  if (lastname !== '') { data.lastname = lastname; }
+  if (photo !== '') { data.photo = photo; }
+  if (email !== '') { data.email = email; }
+  console.log(data);
+  return db.collection('users').doc(uid).set(data, { merge: true });
 };
 
 

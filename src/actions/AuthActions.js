@@ -25,6 +25,7 @@ import {
 import {
   addUserToDatabase,
   getUserByUid,
+  updateUserDetailsToDatabase,
 } from '../database/DatabaseUtils';
 
 require('firebase/firestore');
@@ -184,7 +185,7 @@ export const signUpUserWithEmail = (userInfo) => {
                   uid: user.uid,
                 },
               });
-              addUserToDatabase(username, userFirstName, userLastName, user.uid)
+              addUserToDatabase(username, userFirstName, userLastName, photoURL, userEmail, user.uid)
                 .catch((error) => {
                   console.log(error);
                   dispatch({
@@ -243,11 +244,12 @@ export const signInWithEmailAndPassword = (email, password) => {
       });
   };
 };
+// TODO: Simplify this, just update email, and photo, but dont do the upload?
 
 /**
  * Updates user's firebase profile and adds user record to database
  * This should only be used for a new user who logs in via Facebook
- * @param {*} email the email to be updated or '' if not required to update
+ * @param {*} email the email to be updated and added
  * @param {*} username 
  * @param {*} firstName 
  * @param {*} lastName 
@@ -259,16 +261,20 @@ export const updateFirebaseUserAndAddSecondaryDetails =
     return async (dispatch) => {
       dispatch({ type: UPDATE_USER_PROFILE_LOADING });
       try {
+        // Update email in Firebase Auth
+        await user.updateEmail(email);
+
+        // Update Display Name in Firebase Auth
         const displayName = lastName.length > 0 ? `${firstName} ${lastName}` : `${firstName}`;
         await user.updateProfile({ displayName });
-        await addUserToDatabase(username, firstName, lastName, user.uid);
+
+        // Upload new picture if any, and update in Firebase Auth
+        let { photoURL } = user;
         if (photoURI !== '') {
-          const photoURL = await uploadProfilePicture(photoURI, user.uid);
+          photoURL = await uploadProfilePicture(photoURI, user.uid);
           await user.updateProfile({ photoURL });
         }
-        if (email !== '') {
-          await user.updateEmail(email);
-        }
+        updateUserDetailsToDatabase(username, firstName, lastName, photoURL, email, user.uid);
       } catch (error) {
         dispatch({ type: UPDATE_USER_PROFILE_ERROR });
       }

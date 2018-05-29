@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Button, Text, TouchableOpacity, Image, Platform, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, Button,
+  Text, TouchableOpacity, Image,
+  Platform, ActivityIndicator, Alert,
+} from 'react-native';
 import { ImagePicker } from 'expo';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -36,13 +39,6 @@ const styles = StyleSheet.create({
 });
 
 class SecondaryDetailsScreen extends Component {
-  static getDerivedStateFromProps(props) {
-    if (props.userProfileUpdated) {
-      this.props.navigation.popToTop();
-    }
-    return null;
-  }
-
   static getFirstNameLastNameFromDisplayName(displayName) {
     const parts = displayName.split(' ');
     const firstName = parts.slice(0, parts.length - 1).join(' ');
@@ -76,6 +72,13 @@ class SecondaryDetailsScreen extends Component {
     this.validateEmailUnique = this.validateEmailUnique.bind(this);
     this.pickProfilePic = this.pickProfilePic.bind(this);
     this.onSubmitUpdateUserProfile = this.onSubmitUpdateUserProfile.bind(this);
+    this.onQuitModal = this.onQuitModal.bind(this);
+  }
+
+  componentDidUpdate() {
+    if (this.props.userProfileUpdated || this.props.updateUserProfileError) {
+      this.renderConfirmationAlert();
+    }
   }
 
   renderUsernameErrorMessage() {
@@ -98,6 +101,22 @@ class SecondaryDetailsScreen extends Component {
     return null;
   }
 
+  renderConfirmationAlert() {
+    const confirm =
+      this.props.updateUserProfileError ?
+        'There was an error completing your signup' : 'You are all set!';
+    Alert.alert(
+      confirm,
+      '',
+      [{ text: 'Ok', onPress: this.onQuitModal }],
+      { cancelable: false },
+    );
+  }
+
+  onQuitModal() {
+    this.props.navigation.popToTop();
+  }
+
   async onSubmitUpdateUserProfile() {
     let isEmailUnique = true;
     const isEmailValid = this.validateEmailAddressFormat();
@@ -108,7 +127,7 @@ class SecondaryDetailsScreen extends Component {
     let isUsernameUnique = true;
     const isUsernameLengthValid = this.validateUsernameLength(this.state.username);
     if (isUsernameLengthValid) {
-      isUsernameUnique = this.validateUniqueUsername();
+      isUsernameUnique = await this.validateUniqueUsername();
     }
 
     const isFirstNameValid = this.state.firstName.length > 0;
@@ -118,16 +137,17 @@ class SecondaryDetailsScreen extends Component {
     if (isEmailUnique && isEmailValid &&
        isUsernameUnique && isUsernameLengthValid && isFirstNameValid) {
       const {
-        email, username, firstName, lastName,
+        username, firstName, lastName, photoUpdated, email,
       } = this.state;
-      if (this.state.photoUpdated) {
-        this.props.updateFirebaseUserAndAddSecondaryDetails(
-          email, username,
-          firstName, lastName, this.state.photoURL,
-        );
-      } else {
-        this.props.updateFirebaseUserAndAddSecondaryDetails(email, username, firstName, lastName, '');
-      }
+
+      let { photoURL } = this.state;
+
+      if (!photoUpdated) { photoURL = ''; }
+
+      this.props.updateFirebaseUserAndAddSecondaryDetails(
+        email, username,
+        firstName, lastName, photoURL,
+      );
     }
   }
 

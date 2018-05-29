@@ -28,6 +28,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingTop: Platform.OS === 'ios' ? 0 : StatusBar.currentHeight,
   },
+  emptyFeedMessageContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
 });
 
 
@@ -58,6 +62,16 @@ class FeedScreen extends Component {
     this.props.refreshFeed(this.props.uid);
   }
 
+  renderListEmpty() {
+    return (
+      <View>
+        <Text>Your friends have not sent you any recommendations.</Text>
+        <Text>You can pull down to refresh.</Text>
+        <Text>Try sending a recommendation to get started!</Text>
+      </View>
+    );
+  }
+
   renderFeedList() {
     if (!this.props.loading) {
       return (
@@ -69,6 +83,10 @@ class FeedScreen extends Component {
           keyExtractor={item => item.id}
           refreshing={this.props.refreshingFeed}
           onRefresh={this.onPullToRefresh}
+          ListEmptyComponent={this.renderListEmpty}
+          contentContainerStyle={
+            this.props.feedList.length === 0 ? styles.emptyFeedMessageContainer : null
+          }
         />
       );
     }
