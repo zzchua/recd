@@ -63,6 +63,12 @@ class SignupScreen extends Component {
     this.validatePassword = this.validatePassword.bind(this);
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.isLoggedIn) {
+      this.props.navigation.navigate('App');
+    }
+  }
+
   async moveToNameScreen() {
     let isEmailUnique = true;
     const isEmailValid = this.validateEmailAddressFormat();
@@ -210,6 +216,7 @@ class SignupScreen extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    isLoggedIn: state.auth.isLoggedIn,
     loading: state.auth.loading,
   };
 };
@@ -221,6 +228,7 @@ const mapDispatchToProps = {
 SignupScreen.propTypes = {
   loginUserWithFacebook: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
+  isLoggedIn: PropTypes.bool.isRequired,
   navigation: PropTypes.shape({
     navigate: PropTypes.func.isRequired,
   }).isRequired,
