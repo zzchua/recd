@@ -83,11 +83,16 @@ export const updateUserDetailsToDatabase = (username, firstname, lastname, photo
 /**
  * Commits spotify song recommendations to DB
  * @param {*} currentUid uid of sender the request (logged in user)
+ * @param {*} currentUsername username of the sender of the request
+ * @param {*} currentPhotoUrl profile photo url of the sender
  * @param {*} displayName display name of sender
  * @param {*} uids list of uids to send recd to
  * @param {*} recdItem the spotify song item to send
  */
-export const putUserRecds = (currentUid, displayName, uids, message, recdItem) => {
+export const putUserRecds = (
+  currentUid, currentUsername, currentPhotoUrl,
+  displayName, uids, message, recdItem,
+) => {
   const db = firebase.firestore();
   const batch = db.batch();
   uids.forEach((uid) => {
@@ -99,6 +104,8 @@ export const putUserRecds = (currentUid, displayName, uids, message, recdItem) =
     const recdItemDocRef = db.collection('user_recds').doc(uid).collection('recd_items').doc(rid);
     batch.set(recdItemDocRef, {
       senderUid: currentUid,
+      senderUsername: currentUsername,
+      senderPhotoUrl: currentPhotoUrl,
       senderDisplayName: displayName,
       message,
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
