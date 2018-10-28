@@ -118,8 +118,6 @@ class SendRecdScreen extends Component {
   sendRecdToUsers() {
     this.props.sendRecd(
       this.props.currentUid,
-      this.props.currentUsername,
-      this.props.currentPhotoUrl,
       firebase.auth().currentUser.displayName,
       this.state.selectedUsers,
       this.state.message,
@@ -191,8 +189,6 @@ class SendRecdScreen extends Component {
 }
 
 SendRecdScreen.propTypes = {
-  currentPhotoUrl: PropTypes.string.isRequired,
-  currentUsername: PropTypes.string.isRequired,
   currentUid: PropTypes.string.isRequired,
   navigation: PropTypes.shape({
     state: PropTypes.shape().isRequired,
@@ -208,8 +204,6 @@ SendRecdScreen.propTypes = {
 const mapStateToProps = (state) => {
   return {
     currentUid: state.auth.uid,
-    currentUsername: state.auth.username,
-    currentPhotoUrl: state.auth.photoURL,
     recdSent: state.recdModal.recdSent,
     recdSentFailure: state.recdModal.recdSentFailure,
     recdSentLoading: state.recdModal.recdSentLoading,

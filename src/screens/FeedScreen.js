@@ -5,13 +5,15 @@ import {
   StyleSheet,
   Platform,
   StatusBar,
+  Linking,
   Text,
   ActivityIndicator,
+  TouchableNativeFeedback,
 } from 'react-native';
+import { Card } from 'react-native-elements';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import RecdActionButton from '../components/RecdActionButton';
-import RecdItemCard from '../components/RecdItemCard';
 import {
   getSpotifyAccessToken,
   retrieveRecdItems,
@@ -39,6 +41,7 @@ class FeedScreen extends Component {
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
+    console.log(prevState);
     if (nextProps.isFacebookNewUser && prevState.isFacebookNewUser === false) {
       nextProps.navigation.navigate('SecondaryDetailsModal');
       return { isFacebookNewUser: nextProps.isFacebookNewUser };
@@ -74,7 +77,6 @@ class FeedScreen extends Component {
   renderFeedList() {
     if (!this.props.loading) {
       return (
-        // item: id, data
         <FlatList
           data={this.props.feedList}
           renderItem={({ item }) => {
@@ -95,10 +97,16 @@ class FeedScreen extends Component {
 
   renderFeedItem(item) {
     return (
-      <RecdItemCard
-        itemData={item.data}
-        onPress={() => { this.props.navigation.navigate('ImmersiveItem'); }}
-      />
+      <TouchableNativeFeedback
+        onPress={() => { Linking.openURL(item.data.recdItem.playUrl); }}
+      >
+        <Card>
+          <Text>{item.data.recdItem.title}</Text>
+          <Text>{item.data.recdItem.artists[0]}</Text>
+          <Text>{item.data.message}</Text>
+          <Text>{item.data.senderDisplayName}</Text>
+        </Card>
+      </TouchableNativeFeedback>
     );
   }
 
