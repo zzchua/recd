@@ -183,6 +183,9 @@ export const signUpUserWithEmail = (userInfo) => {
                 type: SIGNUP_USER_SUCCESS,
                 payload: {
                   uid: user.uid,
+                  photoURL,
+                  username,
+                  displayName,
                 },
               });
               addUserToDatabase(username, userFirstName, userLastName, photoURL, userEmail, user.uid)
