@@ -63,7 +63,7 @@ export const userLoggedIn = ({
       uid,
       displayName,
       email,
-      photoURL,
+      photoUrl: photoURL,
     },
   };
 };
@@ -101,12 +101,12 @@ export const loginUserWithFacebook = () => {
             const response = await axios.get(`${FACEBOOK.GRAPH_API_URL}me?access_token=${token}`);
             const fbUid = response.data.id;
             const fbProfilePicGetURL = `${FACEBOOK.GRAPH_API_URL}${fbUid}/picture?type=large&access_token=${token}`;
-            const photoURL = await uploadProfilePicture(fbProfilePicGetURL, user.uid);
-            await user.updateProfile({ photoURL });
+            const photoUrl = await uploadProfilePicture(fbProfilePicGetURL, user.uid);
+            await user.updateProfile({ photoUrl });
             dispatch({
               type: FACEBOOK_LOGIN_NEW_USER,
               payload: {
-                photoURL,
+                photoUrl,
               },
             });
           } catch (error) {
@@ -173,22 +173,22 @@ export const signUpUserWithEmail = (userInfo) => {
       .then((user) => {
         // Create user successfully
         uploadProfilePicture(userImage, user.uid)
-          .then((photoURL) => {
+          .then((photoUrl) => {
             user.updateProfile({
               displayName,
-              photoURL,
+              photoUrl,
             }).then(() => {
               dispatch({
                 // Add display name successfully
                 type: SIGNUP_USER_SUCCESS,
                 payload: {
                   uid: user.uid,
-                  photoURL,
+                  photoUrl,
                   username,
                   displayName,
                 },
               });
-              addUserToDatabase(username, userFirstName, userLastName, photoURL, userEmail, user.uid)
+              addUserToDatabase(username, userFirstName, userLastName, photoUrl, userEmail, user.uid)
                 .catch((error) => {
                   console.log(error);
                   dispatch({
@@ -261,6 +261,8 @@ export const signInWithEmailAndPassword = (email, password) => {
 export const updateFirebaseUserAndAddSecondaryDetails =
   (email, username, firstName, lastName, photoURI) => {
     const user = firebase.auth().currentUser;
+    const displayName = lastName.length > 0 ? `${firstName} ${lastName}` : `${firstName}`;
+    let { photoUrl } = user;
     return async (dispatch) => {
       dispatch({ type: UPDATE_USER_PROFILE_LOADING });
       try {
@@ -268,20 +270,26 @@ export const updateFirebaseUserAndAddSecondaryDetails =
         await user.updateEmail(email);
 
         // Update Display Name in Firebase Auth
-        const displayName = lastName.length > 0 ? `${firstName} ${lastName}` : `${firstName}`;
         await user.updateProfile({ displayName });
 
         // Upload new picture if any, and update in Firebase Auth
-        let { photoURL } = user;
         if (photoURI !== '') {
-          photoURL = await uploadProfilePicture(photoURI, user.uid);
-          await user.updateProfile({ photoURL });
+          photoUrl = await uploadProfilePicture(photoURI, user.uid);
+          await user.updateProfile({ photoUrl });
         }
-        updateUserDetailsToDatabase(username, firstName, lastName, photoURL, email, user.uid);
+        updateUserDetailsToDatabase(username, firstName, lastName, photoUrl, email, user.uid);
       } catch (error) {
         dispatch({ type: UPDATE_USER_PROFILE_ERROR });
       }
-      dispatch({ type: UPDATE_USER_PROFILE_SUCCESS });
+      dispatch({
+        type: UPDATE_USER_PROFILE_SUCCESS,
+        payload: {
+          username,
+          photoUrl,
+          displayName,
+          email,
+        },
+      });
     };
   };
 

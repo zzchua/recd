@@ -66,7 +66,7 @@ class SecondaryDetailsScreen extends Component {
       email: props.email,
       firstName,
       lastName,
-      photoURL: props.photoURL,
+      photoUrl: props.photoUrl,
       username: '',
       isEmailValid: true,
       isEmailUnique: true,
@@ -149,13 +149,13 @@ class SecondaryDetailsScreen extends Component {
         username, firstName, lastName, photoUpdated, email,
       } = this.state;
 
-      let { photoURL } = this.state;
+      let { photoUrl } = this.state;
 
-      if (!photoUpdated) { photoURL = ''; }
+      if (!photoUpdated) { photoUrl = ''; }
 
       this.props.updateFirebaseUserAndAddSecondaryDetails(
         email, username,
-        firstName, lastName, photoURL,
+        firstName, lastName, photoUrl,
       );
     }
   }
@@ -166,7 +166,7 @@ class SecondaryDetailsScreen extends Component {
       aspect: [3, 3],
     });
     if (!result.cancelled) {
-      this.setState({ photoURL: result.uri, photoUpdated: true });
+      this.setState({ photoUrl: result.uri, photoUpdated: true });
     }
   }
 
@@ -247,7 +247,7 @@ class SecondaryDetailsScreen extends Component {
         <View style={styles.formContainer}>
           <View style={styles.imageContainer}>
             <TouchableOpacity onPress={this.pickProfilePic}>
-              <Image source={{ uri: this.state.photoURL }} style={styles.image} />
+              <Image source={{ uri: this.state.photoUrl }} style={styles.image} />
             </TouchableOpacity>
           </View>
           <SignupInput
@@ -311,7 +311,7 @@ const mapStateToProps = (state) => {
     loading: state.auth.loading,
     email: state.auth.email,
     displayName: state.auth.displayName,
-    photoURL: state.auth.photoURL,
+    photoUrl: state.auth.photoUrl,
     userProfileUpdated: state.auth.userProfileUpdated,
     updateUserProfileError: state.auth.updateUserProfileError,
   };
@@ -328,7 +328,7 @@ SecondaryDetailsScreen.propTypes = {
   updateFirebaseUserAndAddSecondaryDetails: PropTypes.func.isRequired,
   email: PropTypes.string.isRequired,
   displayName: PropTypes.string.isRequired,
-  photoURL: PropTypes.string.isRequired,
+  photoUrl: PropTypes.string.isRequired,
   navigation: PropTypes.shape({
     navigate: PropTypes.func.isRequired,
     state: PropTypes.shape().isRequired,

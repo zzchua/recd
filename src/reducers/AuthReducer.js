@@ -27,7 +27,7 @@ const INITIAL_STATE = {
   uid: '',
   email: '',
   displayName: '',
-  photoURL: '',
+  photoUrl: '',
   username: '',
   errorWrongPassword: false,
   errorNoUser: false,
@@ -52,7 +52,7 @@ export default (state = INITIAL_STATE, action) => {
         uid: action.payload.uid,
         displayName: action.payload.displayName,
         email: action.payload.email,
-        photoURL: action.payload.photoURL,
+        photoUrl: action.payload.photoUrl,
         fbLoginError: false,
         errorWrongPassword: false,
         errorNoUser: false,
@@ -109,13 +109,12 @@ export default (state = INITIAL_STATE, action) => {
     case GET_SECONDARY_USER_INFO_NOT_FOUND:
       return {
         ...state,
-        userInfoNotSet: true,
       };
     case FACEBOOK_LOGIN_NEW_USER:
       return {
         ...state,
         isFacebookNewUser: true,
-        photoURL: action.payload.photoURL,
+        photoUrl: action.payload.photoUrl,
       };
     case FACEBOOK_LOGIN_EXISTING_USER:
       return {
@@ -126,6 +125,9 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         uid: action.payload.uid,
+        displayName: action.payload.displayName,
+        username: action.payload.username,
+        photoUrl: action.payload.photoUrl,
         loading: false,
         signUpError: false,
       };
@@ -145,6 +147,10 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         loading: false,
         userProfileUpdated: true,
+        username: action.payload.username,
+        photoUrl: action.payload.photoUrl,
+        displayName: action.payload.displayName,
+        email: action.payload.email,
       };
     case UPDATE_USER_PROFILE_LOADING:
       return {

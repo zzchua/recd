@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import {
   loginUserWithFacebook,
   signInWithEmailAndPassword,
-  getSecondaryUserInfo,
 } from '../actions/AuthActions';
 import { SignupInput } from '../components/common';
 
@@ -155,7 +154,6 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
   loginUserWithFacebook,
   signInWithEmailAndPassword,
-  getSecondaryUserInfo,
 };
 
 LoginScreen.propTypes = {

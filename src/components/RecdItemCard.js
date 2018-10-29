@@ -24,7 +24,6 @@ class RecdItemCard extends Component {
               size='small'
               rounded
               source={{ uri: data.senderPhotoUrl }}
-              onPress={() => console.log(data.senderPhotoUrl)}
               activeOpacity={0.7}
             />
             <TextH3>{data.senderDisplayName}</TextH3>
