@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Alert, ActivityIndicator, View, StyleSheet, ScrollView } from 'react-native';
 import { connect } from 'react-redux';
-import firebase from 'firebase';
 import PropTypes from 'prop-types';
 import { Input, ListItem, Button } from 'react-native-elements';
 import { MaterialIcons, FontAwesome } from '@expo/vector-icons';
@@ -117,10 +116,10 @@ class SendRecdScreen extends Component {
 
   sendRecdToUsers() {
     this.props.sendRecd(
-      this.props.currentUid,
-      this.props.currentUsername,
-      this.props.currentPhotoUrl,
-      firebase.auth().currentUser.displayName,
+      this.props.uid,
+      this.props.username,
+      this.props.photoUrl,
+      this.props.displayName,
       this.state.selectedUsers,
       this.state.message,
       this.props.navigation.state.params.selectedTrack,
@@ -191,9 +190,10 @@ class SendRecdScreen extends Component {
 }
 
 SendRecdScreen.propTypes = {
-  currentPhotoUrl: PropTypes.string.isRequired,
-  currentUsername: PropTypes.string.isRequired,
-  currentUid: PropTypes.string.isRequired,
+  displayName: PropTypes.string.isRequired,
+  photoUrl: PropTypes.string.isRequired,
+  username: PropTypes.string.isRequired,
+  uid: PropTypes.string.isRequired,
   navigation: PropTypes.shape({
     state: PropTypes.shape().isRequired,
     popToTop: PropTypes.func.isRequired,
@@ -207,9 +207,10 @@ SendRecdScreen.propTypes = {
 
 const mapStateToProps = (state) => {
   return {
-    currentUid: state.auth.uid,
-    currentUsername: state.auth.username,
-    currentPhotoUrl: state.auth.photoURL,
+    displayName: state.auth.displayName,
+    uid: state.auth.uid,
+    username: state.auth.username,
+    photoUrl: state.auth.photoUrl,
     recdSent: state.recdModal.recdSent,
     recdSentFailure: state.recdModal.recdSentFailure,
     recdSentLoading: state.recdModal.recdSentLoading,
