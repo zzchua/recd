@@ -75,6 +75,7 @@ export const updateUserDetailsToDatabase = (username, firstname, lastname, photo
   if (lastname !== '') { data.lastname = lastname; }
   if (photo !== '') { data.photo = photo; }
   if (email !== '') { data.email = email; }
+  console.log('Updating secondary user details...');
   console.log(data);
   return db.collection('users').doc(uid).set(data, { merge: true });
 };

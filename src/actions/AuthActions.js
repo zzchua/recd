@@ -256,13 +256,13 @@ export const signInWithEmailAndPassword = (email, password) => {
  * @param {*} username 
  * @param {*} firstName 
  * @param {*} lastName 
- * @param {*} photoURI the uri of the picture to upload or '' if not required to update
+ * @param {*} photoUri the uri of the picture to upload or '' if not required to update
  */
 export const updateFirebaseUserAndAddSecondaryDetails =
-  (email, username, firstName, lastName, photoURI) => {
+  (email, username, firstName, lastName, photoUri) => {
     const user = firebase.auth().currentUser;
     const displayName = lastName.length > 0 ? `${firstName} ${lastName}` : `${firstName}`;
-    let { photoUrl } = user;
+    let { photoURL } = user;
     return async (dispatch) => {
       dispatch({ type: UPDATE_USER_PROFILE_LOADING });
       try {
@@ -273,11 +273,11 @@ export const updateFirebaseUserAndAddSecondaryDetails =
         await user.updateProfile({ displayName });
 
         // Upload new picture if any, and update in Firebase Auth
-        if (photoURI !== '') {
-          photoUrl = await uploadProfilePicture(photoURI, user.uid);
-          await user.updateProfile({ photoUrl });
+        if (photoUri !== '') {
+          photoURL = await uploadProfilePicture(photoUri, user.uid);
+          await user.updateProfile({ photoURL });
         }
-        updateUserDetailsToDatabase(username, firstName, lastName, photoUrl, email, user.uid);
+        updateUserDetailsToDatabase(username, firstName, lastName, photoURL, email, user.uid);
       } catch (error) {
         dispatch({ type: UPDATE_USER_PROFILE_ERROR });
       }
@@ -285,7 +285,7 @@ export const updateFirebaseUserAndAddSecondaryDetails =
         type: UPDATE_USER_PROFILE_SUCCESS,
         payload: {
           username,
-          photoUrl,
+          photoUrl: photoURL, // we use photoUrl, google uses photoURL
           displayName,
           email,
         },
