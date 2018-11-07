@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Text, Button } from 'react-native';
+import { Notifications } from 'expo';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { logoutUser } from '../actions/AuthActions';
 import { Spinner } from '../components/common';
+import { deleteUserPushTokensInDatabase } from '../database/DatabaseUtils';
 
 class ProfileScreen extends Component {
   static navigationOptions = {
@@ -16,6 +18,15 @@ class ProfileScreen extends Component {
     }
   }
 
+  async handleLogout() {
+    // Get the token that uniquely identifies this device
+    const token = await Notifications.getExpoPushTokenAsync();
+
+    await deleteUserPushTokensInDatabase(this.props.uid, token);
+
+    this.props.logoutUser();
+  }
+
   renderSignOutButton() {
     if (this.props.loading) {
       return <Spinner />;
@@ -23,7 +34,7 @@ class ProfileScreen extends Component {
     return (
       <Button
         title='Log Out'
-        onPress={this.props.logoutUser}
+        onPress={this.handleLogout}
       />
     );
   }

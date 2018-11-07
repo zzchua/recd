@@ -80,6 +80,59 @@ export const updateUserDetailsToDatabase = (username, firstname, lastname, photo
   return db.collection('users').doc(uid).set(data, { merge: true });
 };
 
+/**
+ * Add the given push token to the list of tokens belonging to user with give uid to DB
+ * @param {*} uid user identification
+ * @param {*} token push notification token belonging to user with uid
+ */
+export const updateUserPushTokensToDatabase = (uid, token) => {
+  const db = firebase.firestore();
+
+  return db.collection('users').doc(uid).get().then((userDoc) => {
+    let pushTokens = null;
+    const userTokens = userDoc.get('pushTokens');
+    if (userTokens !== undefined && userTokens != null) {
+      pushTokens = new Set(userTokens);
+    } else {
+      pushTokens = new Set();
+    }
+
+    pushTokens.add(token);
+
+    db.collection('users').doc(uid).set({
+      pushTokens: Array.from(pushTokens),
+    }, { merge: true })
+      .catch((error) => {
+        console.log(error);
+      });
+  })
+    .catch((error) => {
+      console.log(error);
+    });
+};
+
+/**
+ * Delete given push token of user with give uid from DB
+ * @param {*} uid user identification
+ * @param {*} token push notification token belonging to user with uid
+ */
+export const deleteUserPushTokensInDatabase = (uid, token) => {
+  const db = firebase.firestore();
+
+  return db.collection('users').doc(uid).get().then((userDoc) => {
+    const userTokens = userDoc.get('pushTokens');
+    const pushTokens = userTokens.filter(val => val !== token);
+
+    db.collection('users').doc(uid)
+      .set({ pushTokens }, { merge: true })
+      .catch((error) => {
+        console.log(error);
+      });
+  })
+    .catch((error) => {
+      console.log(error);
+    });
+};
 
 /**
  * Commits spotify song recommendations to DB

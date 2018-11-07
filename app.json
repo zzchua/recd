@@ -9,7 +9,11 @@
       "bundleIdentifier": "com.recdco.recd"
     },
     "android": {
-      "package": "com.recdco.recd"
+      "package": "com.recdco.recd",
+      "googleServicesFile": "./google-services.json"
+    },
+    "notification": {
+      "icon": "./assets/app_icon_notification.png"
     }
   },
   "facebookScheme": "fb1806188016109251",

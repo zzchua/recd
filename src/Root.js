@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Font } from 'expo';
+import { Font, Permissions, Notifications } from 'expo';
 import firebase from 'firebase';
 import { FIREBASE } from './constants';
 import RootNavigator from './navigation/RootNavigator';
 import { userLoggedIn, getSecondaryUserInfo } from './actions/AuthActions';
+import { updateUserPushTokensToDatabase } from './database/DatabaseUtils';
 
 const styles = StyleSheet.create({
   loading: {
@@ -77,9 +78,35 @@ class Root extends Component {
     });
   }
 
+  async registerForPushNotificationsAsync() {
+    const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    let finalStatus = existingStatus;
+
+    // only ask if permissions have not already been determined, because
+    // iOS won't necessarily prompt the user a second time.
+    if (existingStatus !== 'granted') {
+      // Android remote notification permissions are granted during the app
+      // install, so this will only ask on iOS
+      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      finalStatus = status;
+    }
+
+    // Stop here if the user did not grant permissions
+    if (finalStatus !== 'granted') {
+      return;
+    }
+
+    // Get the token that uniquely identifies this device
+    const token = await Notifications.getExpoPushTokenAsync();
+
+    // POST the token to firestore
+    await updateUserPushTokensToDatabase(this.props.uid, token);
+  }
+
   render() {
     const RootNav = RootNavigator(this.props.uid);
     if (this.state.isFontReady && this.state.isAuthReady) {
+      this.registerForPushNotificationsAsync();
       return (
         <RootNav />
       );
