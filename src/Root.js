@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { Font } from 'expo';
+import { Font, Permissions, Notifications } from 'expo';
 import firebase from 'firebase';
 import { FIREBASE } from './constants';
 import RootNavigator from './navigation/RootNavigator';
 import { userLoggedIn, getSecondaryUserInfo } from './actions/AuthActions';
+import { updateUserPushTokensToDatabase, getUserByUid } from './database/DatabaseUtils';
 
 const styles = StyleSheet.create({
   loading: {
@@ -41,9 +42,23 @@ class Root extends Component {
     // Listen for authentication state to change.
     firebase.auth().onAuthStateChanged((user) => {
       if (user != null) {
+        // Update PhotoURL if not exists
+        if (user.photoURL === undefined || user.photoURL === null) {
+          getUserByUid(user.uid).then((doc) => {
+            if (doc.exists) {
+              const photoURL = doc.data().photo;
+              user.updateProfile({ photoURL });
+            }
+          })
+            .catch((error) => {
+              console.log(error);
+            });
+        }
+
         console.log('User is logged in');
         this.props.userLoggedIn(user);
         this.props.getSecondaryUserInfo(user.uid);
+        this.registerForPushNotificationsAsync();
       } else {
         console.log('User is logged out');
       }
@@ -57,6 +72,10 @@ class Root extends Component {
     // This will create a warning related to timer being set for long period of time
     // This can only be fix by react-native, which hasn't been done yet.
     // To follow the issue, click here: https://github.com/facebook/react-native/issues/12981
+    //
+    // For now we will ignore this warning.
+    // TODO: Check with the issue to see if a solution is made.
+    console.ignoredYellowBox = ['Setting a timer'];
     const settings = {
       timestampsInSnapshots: true,
     };
@@ -75,6 +94,31 @@ class Root extends Component {
     }).catch(() => {
       console.error('Error loading fonts');
     });
+  }
+
+  async registerForPushNotificationsAsync() {
+    const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+    let finalStatus = existingStatus;
+
+    // only ask if permissions have not already been determined, because
+    // iOS won't necessarily prompt the user a second time.
+    if (existingStatus !== 'granted') {
+      // Android remote notification permissions are granted during the app
+      // install, so this will only ask on iOS
+      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+      finalStatus = status;
+    }
+
+    // Stop here if the user did not grant permissions
+    if (finalStatus !== 'granted') {
+      return;
+    }
+
+    // Get the token that uniquely identifies this device
+    const token = await Notifications.getExpoPushTokenAsync();
+
+    // POST the token to firestore
+    await updateUserPushTokensToDatabase(this.props.uid, token);
   }
 
   render() {

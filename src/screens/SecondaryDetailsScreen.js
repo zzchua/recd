@@ -62,6 +62,7 @@ class SecondaryDetailsScreen extends Component {
     super(props);
     const [firstName, lastName] =
       SecondaryDetailsScreen.getFirstNameLastNameFromDisplayName(props.displayName);
+      console.log(props);
     this.state = {
       email: props.email,
       firstName,
