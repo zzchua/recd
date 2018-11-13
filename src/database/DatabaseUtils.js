@@ -88,6 +88,11 @@ export const updateUserDetailsToDatabase = (username, firstname, lastname, photo
 export const updateUserPushTokensToDatabase = (uid, token) => {
   const db = firebase.firestore();
 
+  if (uid === '') {
+    console.log('uid must be non-empty');
+    return null;
+  }
+
   return db.collection('users').doc(uid).get().then((userDoc) => {
     let pushTokens = null;
     const userTokens = userDoc.get('pushTokens');
@@ -123,7 +128,7 @@ export const deleteUserPushTokensInDatabase = (uid, token) => {
     const userTokens = userDoc.get('pushTokens');
     const pushTokens = userTokens.filter(val => val !== token);
 
-    db.collection('users').doc(uid)
+    return db.collection('users').doc(uid)
       .set({ pushTokens }, { merge: true })
       .catch((error) => {
         console.log(error);

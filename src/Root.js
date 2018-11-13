@@ -7,7 +7,7 @@ import firebase from 'firebase';
 import { FIREBASE } from './constants';
 import RootNavigator from './navigation/RootNavigator';
 import { userLoggedIn, getSecondaryUserInfo } from './actions/AuthActions';
-import { updateUserPushTokensToDatabase } from './database/DatabaseUtils';
+import { updateUserPushTokensToDatabase, getUserByUid } from './database/DatabaseUtils';
 
 const styles = StyleSheet.create({
   loading: {
@@ -42,9 +42,23 @@ class Root extends Component {
     // Listen for authentication state to change.
     firebase.auth().onAuthStateChanged((user) => {
       if (user != null) {
+        // Update PhotoURL if not exists
+        if (user.photoURL === undefined || user.photoURL === null) {
+          getUserByUid(user.uid).then((doc) => {
+            if (doc.exists) {
+              const photoURL = doc.data().photo;
+              user.updateProfile({ photoURL });
+            }
+          })
+            .catch((error) => {
+              console.log(error);
+            });
+        }
+
         console.log('User is logged in');
         this.props.userLoggedIn(user);
         this.props.getSecondaryUserInfo(user.uid);
+        this.registerForPushNotificationsAsync();
       } else {
         console.log('User is logged out');
       }
@@ -58,6 +72,10 @@ class Root extends Component {
     // This will create a warning related to timer being set for long period of time
     // This can only be fix by react-native, which hasn't been done yet.
     // To follow the issue, click here: https://github.com/facebook/react-native/issues/12981
+    //
+    // For now we will ignore this warning.
+    // TODO: Check with the issue to see if a solution is made.
+    console.ignoredYellowBox = ['Setting a timer'];
     const settings = {
       timestampsInSnapshots: true,
     };
@@ -106,7 +124,6 @@ class Root extends Component {
   render() {
     const RootNav = RootNavigator(this.props.uid);
     if (this.state.isFontReady && this.state.isAuthReady) {
-      this.registerForPushNotificationsAsync();
       return (
         <RootNav />
       );
